@@ -1,0 +1,164 @@
+{% extends 'base.html.twig' %}
+
+{% set is_pl = lang == 'pl' %}
+{% set contact_email = 'andret2344@gmail.com' %}
+
+{% block title %}{{ is_pl ? 'Polityka prywatności aplikacji Ferrio' : 'Privacy Policy – Ferrio App' }}{% endblock %}
+{% block meta_description %}{{ is_pl ? 'Polityka prywatności aplikacji Ferrio' : 'Privacy Policy for Ferrio App' }}{% endblock %}
+
+{% block meta_extra %}
+	<link
+			rel="canonical"
+			href="{{ url('privacy') }}">
+{% endblock %}
+
+{% macro section_title(text) %}
+	<h2 class="text-base font-bold text-orange-600 dark:text-orange-400 mb-3">{{ text }}</h2>
+{% endmacro %}
+
+{% macro para(text) %}
+	<p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{{ text|raw }}</p>
+{% endmacro %}
+
+{% macro para_mt(text) %}
+	<p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed mt-1">{{ text|raw }}</p>
+{% endmacro %}
+
+{% macro para_mt2(text) %}
+	<p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed mt-2">{{ text|raw }}</p>
+{% endmacro %}
+
+{% macro list_item(text) %}
+	<li class="flex gap-2 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+		<span class="text-amber-500 mt-0.5 shrink-0 font-bold">&bull;</span>
+		{{ text|raw }}
+	</li>
+{% endmacro %}
+
+{% macro email_link(email) %}
+	<a
+			href="mailto:{{ email }}"
+			class="text-amber-600 dark:text-amber-400 underline hover:text-amber-700 dark:hover:text-amber-300">{{ email }}</a>
+{% endmacro %}
+
+{% block body %}
+	<main class="mb-16 sm:mb-20 md:mb-24">
+		<div class="text-center mb-8">
+			<div class="inline-flex p-3 bg-amber-100 dark:bg-amber-900/30 rounded-full mb-4">
+				<svg
+						class="w-8 h-8 text-amber-600 dark:text-amber-400"
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke-width="1.5"
+						stroke="currentColor">
+					<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"/>
+				</svg>
+			</div>
+			<h1 class="text-3xl sm:text-4xl font-bold bg-linear-to-r from-amber-600 via-orange-600 to-rose-600 bg-clip-text text-transparent pb-1 mb-3">
+				{{ is_pl ? 'Polityka prywatności aplikacji Ferrio' : 'Privacy Policy – Ferrio App' }}
+			</h1>
+			<span class="inline-block text-xs font-medium text-gray-500 dark:text-gray-400 bg-white/80 dark:bg-gray-800 px-3 py-1.5 rounded-full border border-gray-200 dark:border-gray-700">
+                {{ is_pl ? 'Data wejścia w życie: 13 października 2025' : 'Effective date: October 13, 2025' }}
+            </span>
+		</div>
+
+		<div class="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl shadow-sm border border-amber-100/80 dark:border-gray-700 p-6 sm:p-8 space-y-6">
+			{# Section 1 #}
+			<section>
+				{{ _self.section_title(is_pl ? '1. Administrator danych' : '1. Data Controller') }}
+				{{ _self.para(is_pl ? 'Administratorem danych osobowych jest Andrzej Chmiel, wydawca aplikacji Ferrio.' : 'The data controller is Andrzej Chmiel, publisher of the Ferrio mobile app.') }}
+				{{ _self.para_mt((is_pl ? 'Kontakt: ' : 'Contact: ') ~ _self.email_link(contact_email) ~ '.') }}
+			</section>
+			<hr class="border-gray-100 dark:border-gray-700">
+
+			{# Section 2 #}
+			<section>
+				{{ _self.section_title(is_pl ? '2. Zakres przetwarzanych danych' : '2. Data Collected') }}
+				{{ _self.para(is_pl ? 'Aplikacja Ferrio przetwarza adres e-mail użytkownika oraz unikalny identyfikator (UID) w przypadku logowania za pomocą Firebase Authentication.' : 'Ferrio processes the user\'s email address and a unique identifier (UID) when logging in via Firebase Authentication.') }}
+				{{ _self.para_mt2(is_pl ? 'Adres e-mail jest używany wyłącznie do:' : 'The email address is used solely to:') }}
+				<ul class="mt-2 ml-1 space-y-1.5">
+					{{ _self.list_item(is_pl ? 'przypisania zgłoszeń (błędów w informacjach o świętach lub propozycji brakujących świąt) do konta użytkownika,' : 'link reports (holiday error reports or missing holiday suggestions) to the user\'s account,') }}
+					{{ _self.list_item(is_pl ? 'ewentualnego zablokowania konta w przypadku nadużyć (np. spamu).' : 'block an account in case of abuse (e.g., spam).') }}
+				</ul>
+				{{ _self.para_mt2(is_pl ? 'Dostępne jest również logowanie anonimowe. W takim przypadku żadne dane osobowe nie są zbierane, ale użytkownicy anonimowi nie mogą korzystać z funkcji zgłoszeń.' : 'Anonymous login is also available. In this case, no personal data is collected, but anonymous users cannot use the reporting feature.') }}
+			</section>
+			<hr class="border-gray-100 dark:border-gray-700">
+
+			{# Section 3 #}
+			<section>
+				{{ _self.section_title(is_pl ? '3. Źródło danych i miejsce przechowywania' : '3. Data Storage and Processing') }}
+				{{ _self.para(is_pl ? 'Dane są przetwarzane w usługach Firebase (Google LLC).' : 'Data is processed using Firebase (Google LLC).') }}
+				{{ _self.para_mt(is_pl ? 'Identyfikatory kont użytkowników są przechowywane dodatkowo na serwerze administratora (OVH, UE) w celu powiązania raportów z kontem.' : 'User identifiers are additionally stored on the administrator\'s server (OVH, EU) to associate reports with accounts.') }}
+			</section>
+			<hr class="border-gray-100 dark:border-gray-700">
+
+			{# Section 4 #}
+			<section>
+				{{ _self.section_title(is_pl ? '4. Raporty użytkowników' : '4. User Reports') }}
+				{{ _self.para(is_pl ? 'Użytkownicy mogą zgłaszać błędy w informacjach o świętach lub proponować brakujące święta.' : 'Users can report errors in holiday information or suggest missing holidays.') }}
+				{{ _self.para_mt(is_pl ? 'Funkcja zgłoszeń jest dostępna wyłącznie dla zalogowanych (nieanonimowych) użytkowników. Konta anonimowe nie mogą wysyłać zgłoszeń, ponieważ nie można ich zidentyfikować ani zablokować w przypadku nadużyć.' : 'The reporting feature is available only to authenticated (non-anonymous) users. Anonymous accounts cannot submit reports, as they cannot be identified or blocked in case of abuse.') }}
+				{{ _self.para_mt(is_pl ? 'Treść zgłoszenia może zawierać dane osobowe podane dobrowolnie przez użytkownika – administrator nie prosi o takie dane i nie wykorzystuje ich do innych celów.' : 'Report contents may include personal information entered voluntarily by the user. Such data is not required or used for any other purpose.') }}
+			</section>
+			<hr class="border-gray-100 dark:border-gray-700">
+
+			{# Section 5 #}
+			<section>
+				{{ _self.section_title(is_pl ? '5. Cele i podstawa przetwarzania' : '5. Purpose and Legal Basis') }}
+				{{ _self.para(is_pl ? 'Dane są przetwarzane wyłącznie w celu:' : 'Data is processed only to:') }}
+				<ul class="mt-2 ml-1 space-y-1.5">
+					{{ _self.list_item(is_pl ? 'obsługi konta użytkownika,' : 'operate user accounts,') }}
+					{{ _self.list_item(is_pl ? 'umożliwienia przypisania raportów,' : 'link reports to users,') }}
+					{{ _self.list_item(is_pl ? 'zapobiegania nadużyciom.' : 'prevent misuse.') }}
+				</ul>
+				{{ _self.para_mt2(is_pl ? 'Podstawą prawną przetwarzania danych jest prawnie uzasadniony interes administratora (art. 6 ust. 1 lit. f RODO).' : 'The legal basis is the legitimate interest of the controller under Article 6(1)(f) of the GDPR.') }}
+			</section>
+			<hr class="border-gray-100 dark:border-gray-700">
+
+			{# Section 6 #}
+			<section>
+				{{ _self.section_title(is_pl ? '6. Udostępnianie danych' : '6. Data Sharing') }}
+				{{ _self.para(is_pl ? 'Dane nie są przekazywane osobom trzecim, z wyjątkiem usług Firebase, które działają jako podmiot przetwarzający dane zgodnie z regulaminem Google.' : 'No data is shared with third parties except for Firebase, which acts as a data processor under Google\'s terms.') }}
+			</section>
+			<hr class="border-gray-100 dark:border-gray-700">
+
+			{# Section 7 #}
+			<section>
+				{{ _self.section_title(is_pl ? '7. Okres przechowywania' : '7. Retention Period') }}
+				{{ _self.para(is_pl ? 'Dane są przechowywane tak długo, jak użytkownik korzysta z aplikacji.' : 'Data is stored as long as the user keeps using the app.') }}
+				{{ _self.para_mt((is_pl ? 'Aby poprosić o usunięcie danych, należy wysłać wiadomość e-mail na adres ' : 'To request deletion of your data, please send an email to ') ~ _self.email_link(contact_email) ~ '.') }}
+				{{ _self.para_mt(is_pl ? 'Konta anonimowe nie przechowują danych osobowych i mogą zostać zresetowane przez wyczyszczenie danych aplikacji.' : 'Anonymous accounts do not store personal data and can be reset by clearing the app data.') }}
+			</section>
+			<hr class="border-gray-100 dark:border-gray-700">
+
+			{# Section 8 #}
+			<section>
+				{{ _self.section_title(is_pl ? '8. Prawa użytkownika' : '8. User Rights') }}
+				{{ _self.para(is_pl ? 'Użytkownik ma prawo do:' : 'Users have the right to:') }}
+				<ul class="mt-2 ml-1 space-y-1.5">
+					{{ _self.list_item(is_pl ? 'dostępu do swoich danych,' : 'access their data,') }}
+					{{ _self.list_item(is_pl ? 'żądania ich usunięcia, sprostowania lub ograniczenia przetwarzania,' : 'request deletion, correction, or restriction of processing,') }}
+					{{ _self.list_item(is_pl ? 'wniesienia sprzeciwu wobec przetwarzania,' : 'object to processing,') }}
+					{{ _self.list_item(is_pl ? 'wniesienia skargi do Prezesa Urzędu Ochrony Danych Osobowych.' : 'file a complaint with a supervisory authority.') }}
+				</ul>
+			</section>
+			<hr class="border-gray-100 dark:border-gray-700">
+
+			{# Section 9 #}
+			<section>
+				{{ _self.section_title(is_pl ? '9. Bezpieczeństwo' : '9. Security') }}
+				{{ _self.para(is_pl ? 'Dane są chronione zgodnie z obowiązującymi standardami bezpieczeństwa Google Firebase.' : 'All data is protected in accordance with current Firebase security standards.') }}
+			</section>
+			<hr class="border-gray-100 dark:border-gray-700">
+
+			{# Section 10 #}
+			<section>
+				{{ _self.section_title(is_pl ? '10. Zmiany w polityce prywatności' : '10. Changes') }}
+				{{ _self.para(is_pl ? 'Administrator może wprowadzać zmiany w niniejszej polityce, a nowa wersja będzie publikowana w aplikacji i na stronie ferrio.app.' : 'The privacy policy may be updated. The current version will always be available in the app and on ferrio.app.') }}
+			</section>
+		</div>
+	</main>
+{% endblock %}

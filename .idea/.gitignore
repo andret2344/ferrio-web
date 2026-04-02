@@ -1,0 +1,11 @@
+/commandlinetools/
+/dataSources/
+/httpRequests/
+/queries/
+/shelf/
+
+/dataSources.local.xml
+/misc.xml
+/php.xml
+/phpunit.xml
+/workspace.xml

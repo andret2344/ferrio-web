@@ -1,0 +1,32 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}404 - Ferrio{% endblock %}
+{% block meta_description %}Page not found{% endblock %}
+
+{% block body %}
+    <main class="flex items-center justify-center px-4 py-16">
+        <div class="text-center max-w-md">
+            <div class="mb-8 flex justify-center">
+                <div class="p-6 bg-amber-100 dark:bg-amber-900/30 rounded-full">
+                    <svg class="w-16 h-16 text-amber-600 dark:text-amber-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" /></svg>
+                </div>
+            </div>
+
+            <h1 class="text-6xl sm:text-7xl font-bold text-gray-900 dark:text-white mb-4">404</h1>
+
+            <h2 class="text-2xl sm:text-3xl font-bold text-gray-800 dark:text-gray-200 mb-4">
+                {{ lang|default('en') == 'pl' ? 'Strona nie znaleziona' : 'Page Not Found' }}
+            </h2>
+
+            <p class="text-base sm:text-lg text-gray-600 dark:text-gray-400 mb-8 leading-relaxed">
+                {{ lang|default('en') == 'pl' ? 'Strona, której szukasz, nie istnieje lub została przeniesiona. Sprawdź adres URL lub wróć do strony głównej.' : 'The page you are looking for does not exist or has been moved. Please check the URL or return to the home page.' }}
+            </p>
+
+            <a href="{{ path('home') }}"
+               class="inline-flex items-center gap-2 px-6 py-3 bg-linear-to-r from-amber-600 to-orange-600 hover:from-amber-700 hover:to-orange-700 dark:from-amber-500 dark:to-orange-500 dark:hover:from-amber-600 dark:hover:to-orange-600 text-white font-semibold rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105">
+                <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" /></svg>
+                <span>{{ lang|default('en') == 'pl' ? 'Przejdź do strony głównej' : 'Go to Home Page' }}</span>
+            </a>
+        </div>
+    </main>
+{% endblock %}

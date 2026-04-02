@@ -1,0 +1,12 @@
+<footer class="fixed bottom-0 left-0 right-0 bg-white/80 dark:bg-gray-800/80 backdrop-blur-lg border-t border-gray-200 dark:border-gray-700 py-3 sm:py-4 md:py-6">
+    <div class="container mx-auto px-4 max-w-4xl">
+        <div class="flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600 dark:text-gray-400">
+            <p class="text-center sm:text-left">
+                &copy; {{ "now"|date("Y") }} Ferrio. {{ lang|default('en') == 'pl' ? 'Wszelkie prawa zastrzeżone.' : 'All rights reserved.' }}
+            </p>
+            <a href="{{ path('privacy') }}" class="hover:text-orange-600 dark:hover:text-orange-400 transition-colors duration-200 font-medium">
+                {{ lang|default('en') == 'pl' ? 'Polityka Prywatności' : 'Privacy Policy' }}
+            </a>
+        </div>
+    </div>
+</footer>
