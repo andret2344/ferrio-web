@@ -1,7 +1,7 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}{{ lang == 'pl' ? 'Nadchodzące niezwykłe święta' : 'Upcoming Unusual Holidays' }}{% if firstDate and lastDate %}: {{ firstDate }} – {{ lastDate }}{% endif %} | Ferrio{% endblock %}
-{% block meta_description %}{% apply spaceless %}{% if days|length > 0 %}{% set total = 0 %}{% for d in days %}{% set total = total + d.holidays|length %}{% endfor %}{{ lang == 'pl' ? total ~ ' świąt w dniach ' ~ firstDate ~ ' – ' ~ lastDate ~ '. Przeglądaj niezwykłe święta na każdy dzień tygodnia.' : total ~ ' holidays from ' ~ firstDate ~ ' to ' ~ lastDate ~ '. Browse unusual celebrations for every day of the week.' }}{% else %}{{ lang == 'pl' ? 'Przeglądaj nadchodzące niezwykłe święta na cały tydzień' : 'Browse upcoming unusual holidays for the week ahead' }}{% endif %}{% endapply %}{% endblock %}
+{% block meta_description %}{% if days|length > 0 %}{% set total = 0 %}{% for d in days %}{% set total = total + d.holidays|length %}{% endfor %}{{ lang == 'pl' ? total ~ ' świąt w dniach ' ~ firstDate ~ ' – ' ~ lastDate ~ '. Przeglądaj niezwykłe święta na każdy dzień tygodnia.' : total ~ ' holidays from ' ~ firstDate ~ ' to ' ~ lastDate ~ '. Browse unusual celebrations for every day of the week.' }}{% else %}{{ lang == 'pl' ? 'Przeglądaj nadchodzące niezwykłe święta na cały tydzień' : 'Browse upcoming unusual holidays for the week ahead' }}{% endif %}{% endblock %}
 
 {% block meta_extra %}
     {% set page_title = (lang == 'pl' ? 'Nadchodzące niezwykłe święta' : 'Upcoming Unusual Holidays') ~ (firstDate and lastDate ? ': ' ~ firstDate ~ ' – ' ~ lastDate : '') ~ ' | Ferrio' %}

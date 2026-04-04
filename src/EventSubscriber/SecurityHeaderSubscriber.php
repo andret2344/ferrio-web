@@ -39,15 +39,43 @@ final class SecurityHeaderSubscriber implements EventSubscriberInterface
 			return;
 		}
 
+		$response = $event->getResponse();
+		$headers = $response->headers;
+
+		$headers->set('X-Content-Type-Options', 'nosniff');
+		$headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
+		$headers->set('Vary', 'Accept-Encoding');
+
+		$contentType = $response->headers->get('Content-Type', '');
+
+		// Fix PrestaSitemap's text/xml → application/xml and add XSL stylesheet
+		if (str_contains($contentType, 'text/xml')) {
+			$headers->set('Content-Type', 'application/xml; charset=UTF-8');
+
+			$xml = $response->getContent();
+			if ($xml !== false && str_starts_with($xml, '<?xml')) {
+				$pos = strpos($xml, '?>');
+				if ($pos !== false) {
+					$response->setContent(
+						substr($xml, 0, $pos + 2)
+						. "\n<?xml-stylesheet type=\"text/xsl\" href=\"/sitemap.xsl\"?>"
+						. substr($xml, $pos + 2),
+					);
+				}
+			}
+
+			return;
+		}
+
+		if (!str_contains($contentType, 'text/html')) {
+			return;
+		}
+
 		$nonce = $event->getRequest()->attributes->get(self::CSP_NONCE_ATTRIBUTE, '');
 
-		$headers = $event->getResponse()->headers;
 		$headers->set('X-Frame-Options', 'DENY');
-		$headers->set('X-Content-Type-Options', 'nosniff');
 		$headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
 		$headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=(), usb=()');
 		$headers->set('Content-Security-Policy', "default-src 'self'; script-src 'self' 'nonce-{$nonce}'; style-src 'self' 'unsafe-inline'; img-src 'self' https:; connect-src 'self' https://api.ferrio.app; frame-ancestors 'none'; base-uri 'self'; form-action 'self'");
-		$headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
-		$headers->set('Vary', 'Accept-Encoding');
 	}
 }
