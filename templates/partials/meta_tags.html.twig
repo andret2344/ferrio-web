@@ -1,0 +1,25 @@
+{# Open Graph #}
+<meta property="og:title" content="{{ meta_title }}">
+<meta property="og:description" content="{{ meta_description }}">
+<meta property="og:type" content="website">
+<meta property="og:url" content="{{ meta_url }}">
+
+{# Twitter Card #}
+<meta name="twitter:title" content="{{ meta_title }}">
+<meta name="twitter:description" content="{{ meta_description }}">
+
+{# Canonical & hreflang #}
+{% set route_name = app.request.attributes.get('_route') %}
+{% set route_params = app.request.attributes.get('_route_params')|filter((v, k) => k != '_locale') %}
+<link rel="canonical" href="{{ meta_url }}">
+<link rel="alternate" hreflang="en" href="{{ url(route_name, route_params|merge({_locale: 'en'})) }}">
+<link rel="alternate" hreflang="pl" href="{{ url(route_name, route_params|merge({_locale: 'pl'})) }}">
+<link rel="alternate" hreflang="x-default" href="{{ url(route_name, route_params|merge({_locale: 'en'})) }}">
+
+{# Pagination #}
+{% if meta_prev is defined and meta_prev %}
+<link rel="prev" href="{{ meta_prev }}">
+{% endif %}
+{% if meta_next is defined and meta_next %}
+<link rel="next" href="{{ meta_next }}">
+{% endif %}

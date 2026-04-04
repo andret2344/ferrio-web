@@ -16,6 +16,6 @@ final class HomeControllerTest extends WebTestCase
 		$client->request('GET', '/');
 
 		self::assertResponseRedirects();
-		self::assertStringContainsString('/day/', $client->getResponse()->headers->get('Location') ?? '');
+		self::assertStringContainsString('/en/day/', $client->getResponse()->headers->get('Location') ?? '');
 	}
 }

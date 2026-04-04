@@ -1,24 +1,95 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ lang == 'pl' ? 'Nadchodzące święta' : 'Upcoming Holidays' }} - Ferrio{% endblock %}
-{% block meta_description %}{{ lang == 'pl' ? 'Przeglądaj nadchodzące niezwykłe święta na cały tydzień' : 'Browse upcoming unusual holidays for the week' }}{% endblock %}
+{% block title %}{{ lang == 'pl' ? 'Nadchodzące niezwykłe święta' : 'Upcoming Unusual Holidays' }}{% if firstDate and lastDate %}: {{ firstDate }} – {{ lastDate }}{% endif %} | Ferrio{% endblock %}
+{% block meta_description %}{% apply spaceless %}{% if days|length > 0 %}{% set total = 0 %}{% for d in days %}{% set total = total + d.holidays|length %}{% endfor %}{{ lang == 'pl' ? total ~ ' świąt w dniach ' ~ firstDate ~ ' – ' ~ lastDate ~ '. Przeglądaj niezwykłe święta na każdy dzień tygodnia.' : total ~ ' holidays from ' ~ firstDate ~ ' to ' ~ lastDate ~ '. Browse unusual celebrations for every day of the week.' }}{% else %}{{ lang == 'pl' ? 'Przeglądaj nadchodzące niezwykłe święta na cały tydzień' : 'Browse upcoming unusual holidays for the week ahead' }}{% endif %}{% endapply %}{% endblock %}
 
 {% block meta_extra %}
-    <meta property="og:title" content="{{ lang == 'pl' ? 'Nadchodzące święta' : 'Upcoming Holidays' }} - Ferrio">
-    <meta property="og:description" content="{{ lang == 'pl' ? 'Przeglądaj nadchodzące niezwykłe święta' : 'Browse upcoming unusual holidays' }}">
-    <meta property="og:type" content="website">
-    <link rel="canonical" href="{{ url('upcoming', {week: weekOffset}) }}">
+    {% set page_title = (lang == 'pl' ? 'Nadchodzące niezwykłe święta' : 'Upcoming Unusual Holidays') ~ (firstDate and lastDate ? ': ' ~ firstDate ~ ' – ' ~ lastDate : '') ~ ' | Ferrio' %}
+    {% if days|length > 0 %}
+        {% set total = 0 %}
+        {% for d in days %}{% set total = total + d.holidays|length %}{% endfor %}
+        {% set page_desc = lang == 'pl' ? total ~ ' świąt w dniach ' ~ firstDate ~ ' – ' ~ lastDate ~ '. Przeglądaj niezwykłe święta na każdy dzień tygodnia.' : total ~ ' holidays from ' ~ firstDate ~ ' to ' ~ lastDate ~ '. Browse unusual celebrations for every day of the week.' %}
+    {% else %}
+        {% set page_desc = lang == 'pl' ? 'Przeglądaj nadchodzące niezwykłe święta na cały tydzień' : 'Browse upcoming unusual holidays for the week ahead' %}
+    {% endif %}
+    {% set page_url = url('upcoming', {week: weekOffset}) %}
+
+    {% include 'partials/meta_tags.html.twig' with {
+        meta_title: page_title,
+        meta_description: page_desc,
+        meta_url: page_url,
+        meta_prev: url('upcoming', {week: weekOffset - 1}),
+        meta_next: url('upcoming', {week: weekOffset + 1}),
+    } %}
+
+    {# Prevent indexing of far-offset pages to avoid thin/duplicate content #}
+    {% if weekOffset|abs > 4 %}
+        <meta name="robots" content="noindex, follow">
+    {% endif %}
+
+    {# JSON-LD Structured Data #}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": "{{ page_title|e('js') }}",
+        "description": "{{ page_desc|e('js') }}",
+        "url": "{{ page_url|e('js') }}",
+        "isPartOf": {
+            "@type": "WebSite",
+            "name": "Ferrio",
+            "url": "{{ url('home')|e('js') }}"
+        },
+        "breadcrumb": {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                {
+                    "@type": "ListItem",
+                    "position": 1,
+                    "name": "{{ lang == 'pl' ? 'Strona główna' : 'Home' }}",
+                    "item": "{{ url('home')|e('js') }}"
+                },
+                {
+                    "@type": "ListItem",
+                    "position": 2,
+                    "name": "{{ lang == 'pl' ? 'Nadchodzące święta' : 'Upcoming Holidays' }}",
+                    "item": "{{ page_url|e('js') }}"
+                }
+            ]
+        }{% if days|length > 0 %},
+        "mainEntity": {
+            "@type": "ItemList",
+            "numberOfItems": {{ days|length }},
+            "itemListElement": [
+                {% for day in days %}
+                {
+                    "@type": "ListItem",
+                    "position": {{ loop.index }},
+                    "item": {
+                        "@type": "WebPage",
+                        "name": "{{ day.formattedDate|e('js') }}",
+                        "url": "{{ url('day', {month: day.month, day: day.day})|e('js') }}",
+                        "description": "{{ day.holidays|length }} {{ lang == 'pl' ? 'świąt' : 'holidays' }}"
+                    }
+                }{{ not loop.last ? ',' : '' }}
+                {% endfor %}
+            ]
+        }{% endif %}
+    }
+    </script>
 {% endblock %}
 
 {% block body %}
-    <main class="mb-16 sm:mb-20 md:mb-24 px-4">
+    <main id="main-content" class="mb-16 sm:mb-20 md:mb-24 px-4">
         {% include 'partials/header.html.twig' %}
+
+        <h1 class="sr-only">{{ lang == 'pl' ? 'Nadchodzące niezwykłe święta' : 'Upcoming Unusual Holidays' }}</h1>
 
         {# Week navigation #}
         <div class="mb-4 sm:mb-6 flex items-center justify-center gap-2 sm:gap-4">
             <a href="{{ path('upcoming', {week: weekOffset - 1}) }}"
                class="flex items-center gap-1 sm:gap-2 px-3 py-2 sm:px-4 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-sm sm:text-base font-semibold rounded-lg shadow hover:shadow-lg transition-all duration-200 hover:scale-105">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
+                <svg class="w-4 h-4 sm:w-5 sm:h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><title>Previous</title><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
                 <span class="hidden sm:inline">{{ lang == 'pl' ? 'Poprzedni tydzień' : 'Previous Week' }}</span>
                 <span class="sm:hidden">{{ lang == 'pl' ? 'Wstecz' : 'Prev' }}</span>
             </a>
@@ -38,7 +109,7 @@
                class="flex items-center gap-1 sm:gap-2 px-3 py-2 sm:px-4 bg-white dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-600 text-gray-700 dark:text-gray-300 text-sm sm:text-base font-semibold rounded-lg shadow hover:shadow-lg transition-all duration-200 hover:scale-105">
                 <span class="hidden sm:inline">{{ lang == 'pl' ? 'Następny tydzień' : 'Next Week' }}</span>
                 <span class="sm:hidden">{{ lang == 'pl' ? 'Dalej' : 'Next' }}</span>
-                <svg class="w-4 h-4 sm:w-5 sm:h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
+                <svg class="w-4 h-4 sm:w-5 sm:h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><title>Next</title><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
             </a>
         </div>
 
@@ -51,13 +122,13 @@
                     <div class="bg-white dark:bg-gray-800 rounded-xl sm:rounded-2xl shadow-xl p-4 sm:p-6 border border-gray-100 dark:border-gray-700 hover:shadow-2xl transition-shadow duration-300">
                         <div class="flex items-start gap-3 sm:gap-4 mb-3 sm:mb-4">
                             <div class="shrink-0 p-2 sm:p-3 bg-linear-to-br from-amber-100 to-orange-100 dark:from-amber-900/30 dark:to-orange-900/30 rounded-lg">
-                                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-amber-700 dark:text-amber-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
+                                <svg class="w-5 h-5 sm:w-6 sm:h-6 text-amber-700 dark:text-amber-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><title>Calendar</title><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
                             </div>
                             <div class="flex-1 min-w-0">
                                 <div class="flex flex-col sm:flex-row sm:items-baseline gap-1 sm:gap-3 mb-1">
-                                    <h3 class="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-white wrap-break-word">
+                                    <h2 class="text-lg sm:text-xl md:text-2xl font-bold text-gray-900 dark:text-white wrap-break-word">
                                         {{ day.formattedDate }}
-                                    </h3>
+                                    </h2>
                                     <span class="text-xs sm:text-sm font-medium text-gray-500 dark:text-gray-400">
                                         {% if day.daysFromToday == 0 %}
                                             {{ lang == 'pl' ? 'Dzisiaj' : 'Today' }}

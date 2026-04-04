@@ -1,7 +1,8 @@
 {% set current_route = app.request.attributes.get('_route') %}
-{% set today_path = path('home') %}
+{% set route_params = app.request.attributes.get('_route_params')|filter((v, k) => k != '_locale') %}
+{% set is_en = app.request.locale != 'pl' %}
 
-<nav class="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
+<nav class="fixed top-0 left-0 right-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700" aria-label="Main navigation">
     <div class="container mx-auto px-4 py-3 max-w-6xl">
         <div class="flex items-center justify-between">
             <a href="{{ path('home') }}" class="text-2xl font-bold bg-linear-to-r from-amber-600 via-orange-600 to-rose-600 bg-clip-text text-transparent hover:opacity-80 transition-opacity">
@@ -11,33 +12,35 @@
             <div class="flex items-center gap-3">
                 {# Desktop nav #}
                 <div class="hidden md:flex items-center gap-6 mr-3">
-                    <a href="{{ today_path }}"
+                    <a href="{{ path('home') }}"
+                       {{ current_route == 'day' ? 'aria-current="page"' : '' }}
                        class="relative pb-1 font-medium transition-all duration-200 text-gray-700 dark:text-gray-300 group after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:h-0.5 after:bg-gradient-to-r after:from-amber-600 after:via-orange-600 after:to-rose-600 after:transition-all after:duration-300 {{ current_route == 'day' ? 'after:w-full' : 'after:w-0 hover:after:w-full' }}">
-                        {{ lang|default('en') == 'pl' ? 'Dzisiaj' : 'Today' }}
+                        {{ is_en ? 'Today' : 'Dzisiaj' }}
                     </a>
                     <a href="{{ path('upcoming', {week: 0}) }}"
+                       {{ current_route == 'upcoming' ? 'aria-current="page"' : '' }}
                        class="relative pb-1 font-medium transition-all duration-200 text-gray-700 dark:text-gray-300 group after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:h-0.5 after:bg-gradient-to-r after:from-amber-600 after:via-orange-600 after:to-rose-600 after:transition-all after:duration-300 {{ current_route == 'upcoming' ? 'after:w-full' : 'after:w-0 hover:after:w-full' }}">
-                        {{ lang|default('en') == 'pl' ? 'Nadchodzące' : 'Upcoming' }}
+                        {{ is_en ? 'Upcoming' : 'Nadchodzące' }}
                     </a>
                 </div>
 
-                {# Language picker #}
-                <div class="flex items-center gap-1.5 sm:gap-2 h-6" id="language-picker">
-                    <button data-lang="en" class="font-medium transition-colors duration-200 cursor-pointer {{ (lang|default('en')) != 'pl' ? 'text-orange-600 dark:text-orange-400 text-base' : 'text-gray-400 dark:text-gray-500 hover:text-orange-600 dark:hover:text-orange-400 text-sm' }}">EN</button>
-                    <span class="text-gray-400 text-sm">/</span>
-                    <button data-lang="pl" class="font-medium transition-colors duration-200 cursor-pointer {{ (lang|default('en')) == 'pl' ? 'text-orange-600 dark:text-orange-400 text-base' : 'text-gray-400 dark:text-gray-500 hover:text-orange-600 dark:hover:text-orange-400 text-sm' }}">PL</button>
-                </div>
+                {# Language picker — links to locale-prefixed URLs #}
+                <nav class="flex items-center gap-1.5 sm:gap-2 h-6" aria-label="Language">
+                    <a href="{{ path(current_route, route_params|merge({_locale: 'en'})) }}" {{ is_en ? 'aria-current="true"' : '' }} class="font-medium transition-colors duration-200 {{ is_en ? 'text-orange-600 dark:text-orange-400 text-base' : 'text-gray-400 dark:text-gray-500 hover:text-orange-600 dark:hover:text-orange-400 text-sm' }}">EN</a>
+                    <span class="text-gray-400 text-sm" aria-hidden="true">/</span>
+                    <a href="{{ path(current_route, route_params|merge({_locale: 'pl'})) }}" {{ not is_en ? 'aria-current="true"' : '' }} class="font-medium transition-colors duration-200 {{ is_en ? 'text-gray-400 dark:text-gray-500 hover:text-orange-600 dark:hover:text-orange-400 text-sm' : 'text-orange-600 dark:text-orange-400 text-base' }}">PL</a>
+                </nav>
 
                 {# Theme toggle #}
                 <button id="theme-toggle" class="p-2 sm:p-2.5 md:p-3 rounded-full bg-white dark:bg-gray-900 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 cursor-pointer" aria-label="Toggle theme">
-                    <svg class="w-5 h-5 text-gray-700 dark:hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" /></svg>
-                    <svg class="w-5 h-5 text-amber-500 hidden dark:block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" /></svg>
+                    <svg class="w-5 h-5 text-gray-700 dark:hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><title>Dark mode</title><path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.72 9.72 0 0 1 18 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 0 0 3 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 0 0 9.002-5.998Z" /></svg>
+                    <svg class="w-5 h-5 text-amber-500 hidden dark:block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><title>Light mode</title><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386-1.591 1.591M21 12h-2.25m-.386 6.364-1.591-1.591M12 18.75V21m-4.773-4.227-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 1 1-7.5 0 3.75 3.75 0 0 1 7.5 0Z" /></svg>
                 </button>
 
                 {# Mobile menu button #}
                 <button id="mobile-menu-btn" class="md:hidden p-2 cursor-pointer" aria-label="Toggle menu">
-                    <svg id="menu-icon-open" class="w-6 h-6 text-gray-700 dark:text-gray-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
-                    <svg id="menu-icon-close" class="w-6 h-6 text-gray-700 dark:text-gray-300 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
+                    <svg id="menu-icon-open" class="w-6 h-6 text-gray-700 dark:text-gray-300" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><title>Open menu</title><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
+                    <svg id="menu-icon-close" class="w-6 h-6 text-gray-700 dark:text-gray-300 hidden" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><title>Close menu</title><path stroke-linecap="round" stroke-linejoin="round" d="M6 18 18 6M6 6l12 12" /></svg>
                 </button>
             </div>
         </div>
@@ -48,11 +51,11 @@
         <button type="button" aria-label="Close menu" id="mobile-menu-overlay" class="fixed inset-0 bg-black/20 z-40 cursor-default"></button>
         <div class="fixed top-14.25 left-0 right-0 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 shadow-lg z-50">
             <div class="container mx-auto px-4 py-4 flex flex-col gap-4">
-                <a href="{{ today_path }}" class="py-3 px-4 rounded-lg font-medium transition-colors block {{ current_route == 'day' ? 'text-orange-600 dark:text-orange-400' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800' }}">
-                    {{ lang|default('en') == 'pl' ? 'Dzisiaj' : 'Today' }}
+                <a href="{{ path('home') }}" {{ current_route == 'day' ? 'aria-current="page"' : '' }} class="py-3 px-4 rounded-lg font-medium transition-colors block {{ current_route == 'day' ? 'text-orange-600 dark:text-orange-400' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800' }}">
+                    {{ is_en ? 'Today' : 'Dzisiaj' }}
                 </a>
-                <a href="{{ path('upcoming', {week: 0}) }}" class="py-3 px-4 rounded-lg font-medium transition-colors block {{ current_route == 'upcoming' ? 'text-orange-600 dark:text-orange-400' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800' }}">
-                    {{ lang|default('en') == 'pl' ? 'Nadchodzące' : 'Upcoming' }}
+                <a href="{{ path('upcoming', {week: 0}) }}" {{ current_route == 'upcoming' ? 'aria-current="page"' : '' }} class="py-3 px-4 rounded-lg font-medium transition-colors block {{ current_route == 'upcoming' ? 'text-orange-600 dark:text-orange-400' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800' }}">
+                    {{ is_en ? 'Upcoming' : 'Nadchodzące' }}
                 </a>
             </div>
         </div>

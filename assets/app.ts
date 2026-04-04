@@ -1,5 +1,12 @@
 import './styles/app.css';
 
+function initTimezoneCookie(): void {
+	const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+	if (tz) {
+		document.cookie = `timezone=${tz};path=/;max-age=${365 * 24 * 60 * 60};SameSite=Lax;Secure`;
+	}
+}
+
 function initThemeToggle(): void {
 	const btn = document.getElementById('theme-toggle');
 	if (!btn) {
@@ -41,6 +48,7 @@ function initCarousel(): void {
 	}
 
 	const slides = carousel.querySelectorAll<HTMLElement>('.carousel-slide');
+	const dotsContainer = document.getElementById('carousel-dots');
 	const dots = carousel.querySelectorAll<HTMLElement>('.carousel-dot');
 	const prevBtn = document.getElementById('carousel-prev');
 	const nextBtn = document.getElementById('carousel-next');
@@ -49,6 +57,15 @@ function initCarousel(): void {
 	if (count <= 1) {
 		return;
 	}
+
+	// Activate carousel mode: remove stacked spacing, show controls
+	carousel.classList.remove('space-y-6');
+	prevBtn?.classList.remove('hidden');
+	prevBtn?.classList.add('flex');
+	nextBtn?.classList.remove('hidden');
+	nextBtn?.classList.add('flex');
+	dotsContainer?.classList.remove('hidden');
+	dotsContainer?.classList.add('flex');
 
 	// Read initial index from hash
 	let currentIndex: number = 0;
@@ -60,40 +77,47 @@ function initCarousel(): void {
 		}
 	}
 
+	const prefersReducedMotion = globalThis.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 	function showSlide(index: number): void {
-		slides.forEach((slide, i) => {
-			slide.classList.toggle('hidden', i !== index);
-		});
+		slides.forEach((slide, i) =>
+			slide.classList.toggle('hidden', i !== index));
+
+		const activeDotClasses = ['bg-gradient-to-r', 'from-amber-600', 'to-orange-600', 'w-6', 'sm:w-8'];
+		const inactiveDotClasses = ['bg-gray-300', 'dark:bg-gray-600', 'group-hover:bg-gray-400', 'dark:group-hover:bg-gray-500'];
 
 		dots.forEach((dot, i) => {
+			const span = dot.querySelector('span');
+			if (!span) {
+				return;
+			}
 			if (i === index) {
-				dot.className = 'carousel-dot w-2 h-2 rounded-full transition-all duration-200 cursor-pointer bg-gradient-to-r from-amber-600 to-orange-600 w-6 sm:w-8';
+				span.classList.remove(...inactiveDotClasses);
+				span.classList.add(...activeDotClasses);
 			} else {
-				dot.className = 'carousel-dot w-2 h-2 rounded-full transition-all duration-200 cursor-pointer bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500';
+				span.classList.remove(...activeDotClasses);
+				span.classList.add(...inactiveDotClasses);
 			}
 		});
 
 		currentIndex = index;
-		history.replaceState(null, '', `${globalThis.location.pathname}#${index}`);
+		if (!prefersReducedMotion) {
+			history.replaceState(null, '', `${globalThis.location.pathname}#${index}`);
+		}
 	}
 
-	// Show initial slide
+	// Show initial slide (hides others)
 	showSlide(currentIndex);
 
-	prevBtn?.addEventListener('click', () => {
-		showSlide(currentIndex === 0 ? count - 1 : currentIndex - 1);
-	});
+	prevBtn?.addEventListener('click', () => showSlide(currentIndex === 0 ? count - 1 : currentIndex - 1));
 
-	nextBtn?.addEventListener('click', () => {
-		showSlide(currentIndex === count - 1 ? 0 : currentIndex + 1);
-	});
+	nextBtn?.addEventListener('click', () => showSlide(currentIndex === count - 1 ? 0 : currentIndex + 1));
 
-	dots.forEach((dot) => {
+	dots.forEach(dot =>
 		dot.addEventListener('click', () => {
 			const index = Number.parseInt(dot.dataset.index ?? '0', 10);
 			showSlide(index);
-		});
-	});
+		}));
 
 	// Arrow key navigation — only when no input/textarea is focused
 	document.addEventListener('keydown', (e: KeyboardEvent) => {
@@ -110,25 +134,9 @@ function initCarousel(): void {
 	});
 }
 
-function initLanguagePicker(): void {
-	const picker = document.getElementById('language-picker');
-	if (!picker) {
-		return;
-	}
-
-	picker.querySelectorAll<HTMLButtonElement>('button[data-lang]').forEach((btn) => {
-		btn.addEventListener('click', () => {
-			const lang: string = btn.dataset.lang ?? 'en';
-			document.cookie = `language=${lang};path=/;max-age=${365 * 24 * 60 * 60};SameSite=Lax`;
-			localStorage.setItem('language', lang);
-			globalThis.location.reload();
-		});
-	});
-}
-
 document.addEventListener('DOMContentLoaded', () => {
+	initTimezoneCookie();
 	initThemeToggle();
 	initMobileMenu();
 	initCarousel();
-	initLanguagePicker();
 });

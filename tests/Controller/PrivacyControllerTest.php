@@ -13,7 +13,7 @@ final class PrivacyControllerTest extends WebTestCase
 	public function privacyReturns200(): void
 	{
 		$client = static::createClient();
-		$client->request('GET', '/privacy');
+		$client->request('GET', '/en/privacy');
 
 		self::assertResponseIsSuccessful();
 	}
@@ -22,7 +22,7 @@ final class PrivacyControllerTest extends WebTestCase
 	public function privacyHasCacheHeaders(): void
 	{
 		$client = static::createClient();
-		$client->request('GET', '/privacy');
+		$client->request('GET', '/en/privacy');
 
 		$cacheControl = $client->getResponse()->headers->get('Cache-Control') ?? '';
 		self::assertStringContainsString('public', $cacheControl);
@@ -32,9 +32,19 @@ final class PrivacyControllerTest extends WebTestCase
 	public function privacyContainsTitle(): void
 	{
 		$client = static::createClient();
-		$crawler = $client->request('GET', '/privacy');
+		$crawler = $client->request('GET', '/en/privacy');
 
 		self::assertResponseIsSuccessful();
 		self::assertSelectorExists('main');
+	}
+
+	#[Test]
+	public function legacyUrlRedirectsToLocalized(): void
+	{
+		$client = static::createClient();
+		$client->request('GET', '/privacy');
+
+		self::assertResponseStatusCodeSame(301);
+		self::assertStringContainsString('/en/privacy', $client->getResponse()->headers->get('Location') ?? '');
 	}
 }

@@ -1,42 +1,88 @@
 <!DOCTYPE html>
-<html lang="{{ lang|default('en') }}">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>{% block title %}Ferrio{% endblock %}</title>
-        <meta name="description" content="{% block meta_description %}Discover the world's most unusual holidays{% endblock %}">
-        <meta name="color-scheme" content="light dark">
-        <link rel="icon" href="{{ asset('favicon.ico') }}">
+<html lang="{{ app.request.locale }}">
+<head>
+	<meta charset="UTF-8">
+	<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0">
+	<title>{% block title %}Ferrio{% endblock %}</title>
+	<meta
+			name="description"
+			content="{% block meta_description %}Discover the world's most unusual holidays{% endblock %}">
+	<meta
+			name="color-scheme"
+			content="light dark">
+	<link
+			rel="icon"
+			href="{{ asset('favicon.ico') }}">
+	<link
+			rel="home"
+			href="{{ url('home') }}">
 
-        {% block meta_extra %}{% endblock %}
+	{# Open Graph defaults #}
+	<meta
+			property="og:site_name"
+			content="Ferrio">
+	<meta
+			property="og:locale"
+			content="{{ app.request.locale == 'pl' ? 'pl_PL' : 'en_US' }}">
+	<meta
+			property="og:locale:alternate"
+			content="{{ app.request.locale == 'pl' ? 'en_US' : 'pl_PL' }}">
 
-        {% block stylesheets %}
-            {{ encore_entry_link_tags('app') }}
-        {% endblock %}
+	{# Twitter Card defaults #}
+	<meta
+			name="twitter:card"
+			content="summary">
 
-        <script>
-            (function() {
-                var saved = localStorage.getItem('theme');
-                var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                if (saved === 'dark' || (!saved && prefersDark)) {
-                    document.documentElement.classList.add('dark');
-                }
-            })();
-        </script>
-    </head>
-    <body>
-        <div class="min-h-screen bg-linear-to-br from-amber-50 via-orange-50 to-rose-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300">
-            {% include 'partials/navbar.html.twig' %}
+	{# Site-level structured data #}
+	<script type="application/ld+json">
+		{
+			"@context": "https://schema.org",
+			"@type": "WebSite",
+			"name": "Ferrio",
+			"url": "{{ url('home') }}",
+            "description": "{{ app.request.locale == 'pl' ? 'Odkryj najbardziej niezwykłe święta na świecie' : "Discover the world's most unusual holidays" }}",
+            "inLanguage": ["en", "pl"]
+        }
+	</script>
 
-            <div class="container mx-auto px-4 py-6 sm:py-8 max-w-4xl pt-20 sm:pt-24">
-                {% block body %}{% endblock %}
+	{% block meta_extra %}{% endblock %}
 
-                {% include 'partials/footer.html.twig' %}
-            </div>
-        </div>
+	{# Inline theme detection — must run before first paint to prevent flash #}
+	<script nonce="{{ app.request.attributes.get('_csp_nonce') }}">
+		(() => {
+			const s = localStorage.getItem('theme');
+			if (s === 'dark' || !s && matchMedia('(prefers-color-scheme:dark)').matches) {
+				document.documentElement.classList.add('dark');
+			}
+		})();
+	</script>
 
-        {% block javascripts %}
-            {{ encore_entry_script_tags('app') }}
-        {% endblock %}
-    </body>
+	{% block stylesheets %}
+		{{ encore_entry_link_tags('app') }}
+	{% endblock %}
+
+	{% block head_scripts %}
+		{{ encore_entry_script_tags('app') }}
+	{% endblock %}
+</head>
+<body>
+<a
+		tabindex='0'
+		href="#main-content"
+		class="sr-only focus:not-sr-only focus:absolute focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:bg-amber-600 focus:text-white focus:rounded-lg focus:font-semibold">
+	{{ app.request.locale == 'pl' ? 'Przejdź do treści' : 'Skip to content' }}
+</a>
+<div class="min-h-screen bg-linear-to-br from-amber-50 via-orange-50 to-rose-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 transition-colors duration-300">
+	{% include 'partials/navbar.html.twig' %}
+
+	<div class="container mx-auto px-4 py-6 sm:py-8 max-w-4xl pt-20 sm:pt-24">
+		{% block body %}{% endblock %}
+
+		{% include 'partials/footer.html.twig' %}
+	</div>
+</div>
+
+</body>
 </html>

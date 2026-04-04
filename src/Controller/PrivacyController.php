@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Controller;
 
-use App\Service\LanguageResolver;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,15 +11,11 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class PrivacyController extends AbstractController
 {
-	public function __construct(
-		private readonly LanguageResolver $languageResolver,
-	) {}
-
-	#[Route('/privacy', name: 'privacy')]
+	#[Route('/{_locale}/privacy', name: 'privacy', requirements: ['_locale' => 'en|pl'])]
 	public function show(Request $request): Response
 	{
 		$response = $this->render('privacy/show.html.twig', [
-			'lang' => $this->languageResolver->resolve($request),
+			'lang' => $request->getLocale(),
 		]);
 
 		$response->setSharedMaxAge(86400);

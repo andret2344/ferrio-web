@@ -13,7 +13,10 @@ final class LanguageResolver
 
 	public function resolve(Request $request): string
 	{
-		$lang = $request->cookies->get('language', $request->getPreferredLanguage(self::SUPPORTED_LANGUAGES) ?? self::DEFAULT_LANGUAGE);
+		$lang = $request->query->get('lang')
+			?? $request->cookies->get('language')
+			?? $request->getPreferredLanguage(self::SUPPORTED_LANGUAGES)
+			?? self::DEFAULT_LANGUAGE;
 
 		return in_array($lang, self::SUPPORTED_LANGUAGES, true) ? $lang : self::DEFAULT_LANGUAGE;
 	}

@@ -1,17 +1,102 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}{{ dayResult ? dayResult.formattedDate : '' }} - Ferrio{% endblock %}
-{% block meta_description %}{{ lang == 'pl' ? 'Odkryj święta na ' ~ (dayResult ? dayResult.formattedDate : '') : 'Discover holidays on ' ~ (dayResult ? dayResult.formattedDate : '') }}{% endblock %}
+{% block title %}{% if dayResult %}{{ lang == 'pl' ? 'Święta na ' ~ dayResult.formattedDate : 'Holidays on ' ~ dayResult.formattedDate }} | Ferrio{% endif %}{% endblock %}
+{% block meta_description %}{% apply spaceless %}{% if dayResult and dayResult.holidays|length > 0 %}{% set first_names = [] %}{% for h in dayResult.holidays|slice(0, 2) %}{% set first_names = first_names|merge([h.name]) %}{% endfor %}{{ lang == 'pl' ? dayResult.holidays|length ~ ' świąt na ' ~ dayResult.formattedDate ~ ' – ' ~ first_names|join(', ') ~ '. Odkryj niezwykłe święta na Ferrio.' : dayResult.holidays|length ~ ' holidays on ' ~ dayResult.formattedDate ~ ' including ' ~ first_names|join(', ') ~ '. Discover unusual celebrations worldwide.' }}{% else %}{{ lang == 'pl' ? 'Odkryj niezwykłe święta na ' ~ (dayResult ? dayResult.formattedDate : '') ~ ' | Ferrio' : 'Discover unusual holidays on ' ~ (dayResult ? dayResult.formattedDate : '') ~ ' | Ferrio' }}{% endif %}{% endapply %}{% endblock %}
 
 {% block meta_extra %}
-    <meta property="og:title" content="{{ dayResult ? dayResult.formattedDate : '' }} - Ferrio">
-    <meta property="og:description" content="{{ lang == 'pl' ? 'Odkryj święta na ' ~ (dayResult ? dayResult.formattedDate : '') : 'Discover holidays on ' ~ (dayResult ? dayResult.formattedDate : '') }}">
-    <meta property="og:type" content="website">
-    <link rel="canonical" href="{{ url('day', {month: month, day: day}) }}">
+    {% set page_title = lang == 'pl' ? 'Święta na ' ~ (dayResult ? dayResult.formattedDate : '') ~ ' | Ferrio' : 'Holidays on ' ~ (dayResult ? dayResult.formattedDate : '') ~ ' | Ferrio' %}
+    {% if dayResult and dayResult.holidays|length > 0 %}
+        {% set first_names = [] %}
+        {% for h in dayResult.holidays|slice(0, 2) %}
+            {% set first_names = first_names|merge([h.name]) %}
+        {% endfor %}
+        {% set page_desc = lang == 'pl' ? dayResult.holidays|length ~ ' świąt na ' ~ dayResult.formattedDate ~ ' – ' ~ first_names|join(', ') ~ '. Odkryj niezwykłe święta na Ferrio.' : dayResult.holidays|length ~ ' holidays on ' ~ dayResult.formattedDate ~ ' including ' ~ first_names|join(', ') ~ '. Discover unusual celebrations worldwide.' %}
+    {% else %}
+        {% set page_desc = lang == 'pl' ? 'Odkryj niezwykłe święta na ' ~ (dayResult ? dayResult.formattedDate : '') : 'Discover unusual holidays on ' ~ (dayResult ? dayResult.formattedDate : '') %}
+    {% endif %}
+    {% set page_url = url('day', {month: month, day: day}) %}
+
+    {% set prev_url = url('day', {month: prevDay.month, day: prevDay.day}) %}
+    {% set next_url = url('day', {month: nextDay.month, day: nextDay.day}) %}
+
+    {% include 'partials/meta_tags.html.twig' with {
+        meta_title: page_title,
+        meta_description: page_desc,
+        meta_url: page_url,
+        meta_prev: prev_url,
+        meta_next: next_url,
+    } %}
+
+    {# Prefetch adjacent pages for faster navigation #}
+    <link rel="prefetch" href="{{ prev_url }}">
+    <link rel="prefetch" href="{{ next_url }}">
+
+    {# Prevent indexing of empty day pages #}
+    {% if not dayResult or dayResult.holidays|length == 0 %}
+        <meta name="robots" content="noindex">
+    {% endif %}
+
+    {# JSON-LD Structured Data #}
+    {% if dayResult and dayResult.holidays|length > 0 %}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": "{{ page_title|e('js') }}",
+        "description": "{{ page_desc|e('js') }}",
+        "url": "{{ page_url|e('js') }}",
+        "isPartOf": {
+            "@type": "WebSite",
+            "name": "Ferrio",
+            "url": "{{ url('home')|e('js') }}"
+        },
+        "breadcrumb": {
+            "@type": "BreadcrumbList",
+            "itemListElement": [
+                {
+                    "@type": "ListItem",
+                    "position": 1,
+                    "name": "{{ lang == 'pl' ? 'Strona główna' : 'Home' }}",
+                    "item": "{{ url('home')|e('js') }}"
+                },
+                {
+                    "@type": "ListItem",
+                    "position": 2,
+                    "name": "{{ dayResult.formattedDate|e('js') }}",
+                    "item": "{{ page_url|e('js') }}"
+                }
+            ]
+        },
+        "mainEntity": {
+            "@type": "ItemList",
+            "numberOfItems": {{ dayResult.holidays|length }},
+            "itemListElement": [
+                {% for holiday in dayResult.holidays %}
+                {
+                    "@type": "ListItem",
+                    "position": {{ loop.index }},
+                    "item": {
+                        "@type": "Event",
+                        "name": "{{ holiday.name|e('js') }}",
+                        {% if holiday.description is not empty %}"description": "{{ holiday.description|slice(0, 200)|e('js') }}",{% endif %}
+                        {% if holiday.url is not empty %}"url": "{{ holiday.url|e('js') }}",{% endif %}
+                        {% if not (month == 2 and day > 28) %}
+                        "startDate": "{{ currentYear }}-{{ '%02d'|format(month) }}-{{ '%02d'|format(day) }}",
+                        "endDate": "{{ currentYear }}-{{ '%02d'|format(month) }}-{{ '%02d'|format(day) }}",
+                        {% endif %}
+                        "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode"
+                    }
+                }{{ not loop.last ? ',' : '' }}
+                {% endfor %}
+            ]
+        }
+    }
+    </script>
+    {% endif %}
 {% endblock %}
 
 {% block body %}
-    <main class="mb-16 sm:mb-20 md:mb-24">
+    <main id="main-content" class="mb-16 sm:mb-20 md:mb-24">
         {% include 'partials/header.html.twig' %}
 
         {% if not hasError %}
@@ -21,26 +106,26 @@
                     <a href="{{ path('day', {month: prevDay.month, day: prevDay.day}) }}"
                        class="shrink-0 p-1 rounded-full text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors cursor-pointer"
                        aria-label="Previous day">
-                        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
+                        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><title>Previous</title><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
                     </a>
 
                     <div class="flex-1 flex justify-center">
-                        <span class="px-3 py-1.5 sm:px-4 sm:py-2 bg-linear-to-r from-amber-100 to-orange-100 dark:from-amber-900/30 dark:to-orange-900/30 text-amber-800 dark:text-amber-300 rounded-full text-xs sm:text-sm font-semibold">
-                            {{ dayResult.formattedDate }}
-                        </span>
+                        <h1 class="px-3 py-1.5 sm:px-4 sm:py-2 bg-linear-to-r from-amber-100 to-orange-100 dark:from-amber-900/30 dark:to-orange-900/30 text-amber-800 dark:text-amber-300 rounded-full text-xs sm:text-sm font-semibold">
+                            {{ lang == 'pl' ? 'Święta – ' ~ dayResult.formattedDate : 'Holidays – ' ~ dayResult.formattedDate }}
+                        </h1>
                     </div>
 
                     <a href="{{ path('day', {month: nextDay.month, day: nextDay.day}) }}"
                        class="shrink-0 p-1 rounded-full text-amber-700 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors cursor-pointer"
                        aria-label="Next day">
-                        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
+                        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><title>Next</title><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
                     </a>
                 </div>
 
                 <a href="{{ path('day', {month: randomDay.month, day: randomDay.day}) }}"
                    class="p-1 rounded-full text-gray-400 dark:text-gray-500 hover:text-amber-700 dark:hover:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-900/30 transition-colors cursor-pointer"
                    aria-label="Random day">
-                    <svg class="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" /></svg>
+                    <svg class="w-3.5 h-3.5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><title>Random</title><path stroke-linecap="round" stroke-linejoin="round" d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" /></svg>
                 </a>
             </div>
         {% endif %}
@@ -53,39 +138,68 @@
                 {{ lang == 'pl' ? 'Nie znaleziono świąt na ten dzień.' : 'No holidays found for this date.' }}
             </div>
         {% else %}
-            {# Holiday carousel #}
-            <div class="relative px-2 sm:px-4 md:px-0" id="carousel" data-count="{{ dayResult.holidays|length }}">
+            {# Holidays — all cards visible by default for SEO; JS enhances to carousel #}
+            <section class="relative px-2 sm:px-4 md:px-0 space-y-6" id="carousel" data-count="{{ dayResult.holidays|length }}" aria-label="{{ lang == 'pl' ? 'Karuzela świąt' : 'Holiday carousel' }}" aria-live="polite">
                 {% for holiday in dayResult.holidays %}
-                    <div class="carousel-slide {{ loop.first ? '' : 'hidden' }}" data-index="{{ loop.index0 }}">
+                    <div class="carousel-slide" data-index="{{ loop.index0 }}">
                         {% include 'partials/holiday_card.html.twig' with {holiday: holiday} %}
                     </div>
                 {% endfor %}
 
                 {% if dayResult.holidays|length > 1 %}
-                    {# Prev button #}
+                    {# Carousel controls — hidden by default, JS reveals them #}
                     <button id="carousel-prev"
-                            class="absolute left-0 sm:left-2 md:left-0 top-8 sm:top-10 md:top-12 -translate-x-2 sm:-translate-x-3 md:-translate-x-4 lg:-translate-x-6 w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 flex items-center justify-center bg-white dark:bg-gray-800 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 cursor-pointer"
+                            class="hidden absolute left-0 sm:left-2 md:left-0 top-8 sm:top-10 md:top-12 -translate-x-2 sm:-translate-x-3 md:-translate-x-4 lg:-translate-x-6 w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 items-center justify-center bg-white dark:bg-gray-800 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 cursor-pointer"
                             aria-label="Previous holiday">
-                        <svg class="w-5 h-5 sm:w-6 sm:h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><title>Previous</title><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" /></svg>
                     </button>
 
-                    {# Next button #}
                     <button id="carousel-next"
-                            class="absolute right-0 sm:right-2 md:right-0 top-8 sm:top-10 md:top-12 translate-x-2 sm:translate-x-3 md:translate-x-4 lg:translate-x-6 w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 flex items-center justify-center bg-white dark:bg-gray-800 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 cursor-pointer"
+                            class="hidden absolute right-0 sm:right-2 md:right-0 top-8 sm:top-10 md:top-12 translate-x-2 sm:translate-x-3 md:translate-x-4 lg:translate-x-6 w-10 h-10 sm:w-11 sm:h-11 md:w-12 md:h-12 items-center justify-center bg-white dark:bg-gray-800 rounded-full shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-110 text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-gray-700 cursor-pointer"
                             aria-label="Next holiday">
-                        <svg class="w-5 h-5 sm:w-6 sm:h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
+                        <svg class="w-5 h-5 sm:w-6 sm:h-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><title>Next</title><path stroke-linecap="round" stroke-linejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" /></svg>
                     </button>
 
-                    {# Dots #}
-                    <div class="flex justify-center gap-1.5 sm:gap-2 mt-4 sm:mt-6" id="carousel-dots">
+                    <div class="hidden justify-center gap-0 mt-4 sm:mt-6" id="carousel-dots">
                         {% for holiday in dayResult.holidays %}
-                            <button class="carousel-dot w-2 h-2 rounded-full transition-all duration-200 cursor-pointer {{ loop.first ? 'bg-gradient-to-r from-amber-600 to-orange-600 w-6 sm:w-8' : 'bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500' }}"
-                                    data-index="{{ loop.index0 }}"
-                                    aria-label="Go to holiday {{ loop.index }}"></button>
+                            <button class="carousel-dot p-3 cursor-pointer group" data-index="{{ loop.index0 }}" aria-label="Go to holiday {{ loop.index }}">
+                                <span class="block w-2 h-2 rounded-full transition-all duration-200 {{ loop.first ? 'bg-gradient-to-r from-amber-600 to-orange-600 w-6 sm:w-8' : 'bg-gray-300 dark:bg-gray-600 group-hover:bg-gray-400 dark:group-hover:bg-gray-500' }}"></span>
+                            </button>
                         {% endfor %}
                     </div>
                 {% endif %}
-            </div>
+            </section>
+        {% endif %}
+
+        {% if not hasError %}
+            {# Internal links: upcoming + browse by month #}
+            <nav class="mt-10 sm:mt-14 space-y-6" aria-label="{{ lang == 'pl' ? 'Eksploruj święta' : 'Explore holidays' }}">
+                {# Link to upcoming #}
+                <div class="text-center">
+                    <a href="{{ path('upcoming', {week: 0}) }}"
+                       class="inline-flex items-center gap-2 text-sm font-medium text-amber-700 dark:text-amber-400 hover:text-amber-800 dark:hover:text-amber-300 transition-colors">
+                        <svg class="w-4 h-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 0 1 2.25-2.25h13.5A2.25 2.25 0 0 1 21 7.5v11.25m-18 0A2.25 2.25 0 0 0 5.25 21h13.5A2.25 2.25 0 0 0 21 18.75m-18 0v-7.5A2.25 2.25 0 0 1 5.25 9h13.5A2.25 2.25 0 0 1 21 11.25v7.5" /></svg>
+                        {{ lang == 'pl' ? 'Zobacz nadchodzące święta tego tygodnia' : "See this week's upcoming holidays" }}
+                    </a>
+                </div>
+
+                {# Browse by month #}
+                {% set months_en = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] %}
+                {% set months_pl = ['Sty', 'Lut', 'Mar', 'Kwi', 'Maj', 'Cze', 'Lip', 'Sie', 'Wrz', 'Paź', 'Lis', 'Gru'] %}
+                <div class="text-center">
+                    <h2 class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3">
+                        {{ lang == 'pl' ? 'Przeglądaj wg miesiąca' : 'Browse by month' }}
+                    </h2>
+                    <div class="flex flex-wrap justify-center gap-1.5 sm:gap-2">
+                        {% for m in 1..12 %}
+                            <a href="{{ path('day', {month: m, day: 1}) }}"
+                               class="px-2.5 py-1 text-xs sm:text-sm rounded-full transition-colors duration-200 {{ m == month ? 'bg-amber-600 text-white font-semibold' : 'bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-amber-100 dark:hover:bg-amber-900/30 hover:text-amber-700 dark:hover:text-amber-400' }}">
+                                {{ lang == 'pl' ? months_pl[m - 1] : months_en[m - 1] }}
+                            </a>
+                        {% endfor %}
+                    </div>
+                </div>
+            </nav>
         {% endif %}
     </main>
 {% endblock %}

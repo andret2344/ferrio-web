@@ -8,6 +8,11 @@ use DateTimeImmutable;
 
 final class VirtualDate
 {
+	/** Days per month including virtual Feb 29/30 (Feb = 30). */
+	public const array MONTH_DAYS = [31, 30, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+
+	/** Fixed non-leap year for date arithmetic (Feb cases handled separately). */
+	private const string REF_YEAR = '2025';
 	/**
 	 * Virtual-aware next day: Feb 28→29→30→Mar 1
 	 *
@@ -25,7 +30,7 @@ final class VirtualDate
 			return ['month' => 3, 'day' => 1];
 		}
 
-		$date = new DateTimeImmutable(date('Y') . "-{$month}-{$day}");
+		$date = new DateTimeImmutable(self::REF_YEAR . "-{$month}-{$day}");
 		$next = $date->modify('+1 day');
 
 		return ['month' => (int)$next->format('n'), 'day' => (int)$next->format('j')];
@@ -42,7 +47,7 @@ final class VirtualDate
 			return ['month' => 3, 'day' => 1];
 		}
 
-		$date = new DateTimeImmutable(date('Y') . "-{$month}-{$day}");
+		$date = new DateTimeImmutable(self::REF_YEAR . "-{$month}-{$day}");
 		$next = $date->modify('+1 day');
 
 		return ['month' => (int)$next->format('n'), 'day' => (int)$next->format('j')];
@@ -77,7 +82,7 @@ final class VirtualDate
 			return true;
 		}
 
-		$date = new DateTimeImmutable(date('Y') . "-{$month}-1");
+		$date = new DateTimeImmutable(self::REF_YEAR . "-{$month}-1");
 		$maxDay = (int)$date->format('t');
 
 		return $day <= $maxDay;
@@ -110,7 +115,7 @@ final class VirtualDate
 			return ['month' => 12, 'day' => 31];
 		}
 
-		$prevMonth = new DateTimeImmutable(date('Y') . '-' . ($month - 1) . '-1');
+		$prevMonth = new DateTimeImmutable(self::REF_YEAR . '-' . ($month - 1) . '-1');
 		$lastDay = (int)$prevMonth->format('t');
 
 		return ['month' => $month - 1, 'day' => $lastDay];
@@ -142,9 +147,9 @@ final class VirtualDate
 	 *
 	 * @return list<array{month: int, day: int, daysFromToday: int}>
 	 */
-	public static function generateDateEntries(int $startMonth, int $startDay, int $minCount): array
+	public static function generateDateEntries(int $startMonth, int $startDay, int $minCount, ?\DateTimeZone $tz = null): array
 	{
-		$today = new DateTimeImmutable('today');
+		$today = new DateTimeImmutable('today', $tz);
 		$entries = [];
 		$month = $startMonth;
 		$day = $startDay;
@@ -205,15 +210,14 @@ final class VirtualDate
 	 */
 	public static function getRandomDate(): array
 	{
-		$monthDays = [31, 30, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-		$totalDays = array_sum($monthDays);
+		$totalDays = array_sum(self::MONTH_DAYS);
 		$n = random_int(0, $totalDays - 1);
 
 		for ($m = 0; $m < 12; $m++) {
-			if ($n < $monthDays[$m]) {
+			if ($n < self::MONTH_DAYS[$m]) {
 				return ['month' => $m + 1, 'day' => $n + 1];
 			}
-			$n -= $monthDays[$m];
+			$n -= self::MONTH_DAYS[$m];
 		}
 
 		return ['month' => 12, 'day' => 31];

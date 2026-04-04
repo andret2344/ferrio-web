@@ -1,15 +1,15 @@
 <div class="flex items-center justify-center px-4 py-6">
-    <div class="bg-red-50 dark:bg-red-900/20 border-2 border-red-200 dark:border-red-800 rounded-2xl p-6 sm:p-8 max-w-md w-full">
+    <div class="bg-red-50 dark:bg-red-900/20 border-2 border-red-200 dark:border-red-800 rounded-2xl p-6 sm:p-8 max-w-md w-full" role="alert">
         <div class="flex items-center gap-4 mb-4">
             <div class="shrink-0 p-3 bg-red-100 dark:bg-red-900/40 rounded-full">
-                <svg class="w-6 h-6 sm:w-8 sm:h-8 text-red-600 dark:text-red-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" /></svg>
+                <svg class="w-6 h-6 sm:w-8 sm:h-8 text-red-600 dark:text-red-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true"><title>Error</title><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z" /></svg>
             </div>
             <h3 class="text-lg sm:text-xl font-bold text-red-900 dark:text-red-200">
-                {{ lang|default('en') == 'pl' ? 'Nie można załadować treści' : 'Unable to Load Content' }}
+                {{ app.request.locale == 'pl' ? 'Nie można załadować treści' : 'Unable to Load Content' }}
             </h3>
         </div>
         <p class="text-sm sm:text-base text-red-800 dark:text-red-300 leading-relaxed">
-            {{ lang|default('en') == 'pl' ? 'Nie można nawiązać połączenia z serwerem. Sprawdź połączenie internetowe i spróbuj ponownie.' : 'Unable to establish a connection to the server. Please verify your internet connection and try again.' }}
+            {{ app.request.locale == 'pl' ? 'Nie można nawiązać połączenia z serwerem. Sprawdź połączenie internetowe i spróbuj ponownie.' : 'Unable to establish a connection to the server. Please verify your internet connection and try again.' }}
         </p>
     </div>
 </div>

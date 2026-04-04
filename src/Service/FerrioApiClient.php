@@ -9,9 +9,9 @@ use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
-final class FerrioApiClient
+class FerrioApiClient
 {
-	private const int CACHE_TTL = 3600;
+	private const int CACHE_TTL = 86400;
 	private const float HTTP_TIMEOUT = 10.0;
 
 	public function __construct(

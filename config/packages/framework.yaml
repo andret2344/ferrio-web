@@ -1,6 +1,8 @@
 # see https://symfony.com/doc/current/reference/configuration/framework.html
 framework:
     secret: '%env(APP_SECRET)%'
+    default_locale: en
+    enabled_locales: ['en', 'pl']
     http_method_override: false
     handle_all_throwables: true
 

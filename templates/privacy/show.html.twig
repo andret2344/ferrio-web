@@ -7,9 +7,47 @@
 {% block meta_description %}{{ is_pl ? 'Polityka prywatności aplikacji Ferrio' : 'Privacy Policy for Ferrio App' }}{% endblock %}
 
 {% block meta_extra %}
-	<link
-			rel="canonical"
-			href="{{ url('privacy') }}">
+	{% set page_title = is_pl ? 'Polityka prywatności aplikacji Ferrio' : 'Privacy Policy – Ferrio App' %}
+	{% set page_desc = is_pl ? 'Polityka prywatności aplikacji Ferrio' : 'Privacy Policy for Ferrio App' %}
+	{% set page_url = url('privacy') %}
+
+	{% include 'partials/meta_tags.html.twig' with {
+		meta_title: page_title,
+		meta_description: page_desc,
+		meta_url: page_url,
+	} %}
+
+	<script type="application/ld+json">
+	{
+		"@context": "https://schema.org",
+		"@type": "WebPage",
+		"name": "{{ page_title|e('js') }}",
+		"description": "{{ page_desc|e('js') }}",
+		"url": "{{ page_url|e('js') }}",
+		"isPartOf": {
+			"@type": "WebSite",
+			"name": "Ferrio",
+			"url": "{{ url('home')|e('js') }}"
+		},
+		"breadcrumb": {
+			"@type": "BreadcrumbList",
+			"itemListElement": [
+				{
+					"@type": "ListItem",
+					"position": 1,
+					"name": "{{ is_pl ? 'Strona główna' : 'Home' }}",
+					"item": "{{ url('home')|e('js') }}"
+				},
+				{
+					"@type": "ListItem",
+					"position": 2,
+					"name": "{{ page_title|e('js') }}",
+					"item": "{{ page_url|e('js') }}"
+				}
+			]
+		}
+	}
+	</script>
 {% endblock %}
 
 {% macro section_title(text) %}
@@ -42,7 +80,7 @@
 {% endmacro %}
 
 {% block body %}
-	<main class="mb-16 sm:mb-20 md:mb-24">
+	<main id="main-content" class="mb-16 sm:mb-20 md:mb-24">
 		<div class="text-center mb-8">
 			<div class="inline-flex p-3 bg-amber-100 dark:bg-amber-900/30 rounded-full mb-4">
 				<svg

@@ -1,0 +1,10 @@
+services:
+    _defaults:
+        public: true
+
+    App\Service\FerrioApiClient:
+        autowire: true
+        autoconfigure: true
+        public: true
+        arguments:
+            $apiBaseUrl: '%env(FERRIO_API_BASE_URL)%'

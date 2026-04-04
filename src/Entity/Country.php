@@ -17,6 +17,7 @@ final readonly class Country
 		$this->name = self::resolveName($code);
 	}
 
+	// Hardcoded because the API only returns ISO 3166-1 alpha-2 codes, not localized names.
 	private const array COUNTRY_NAMES = [
 		'AE' => 'United Arab Emirates',
 		'AR' => 'Argentina',

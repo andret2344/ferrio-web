@@ -195,6 +195,50 @@ final class VirtualDateTest extends TestCase
 	}
 
 	#[Test]
+	public function generateDateEntriesCrossingFebBoundaryHasCorrectOrder(): void
+	{
+		$entries = VirtualDate::generateDateEntries(2, 26, 7);
+
+		$dates = array_map(fn(array $e) => "{$e['month']}/{$e['day']}", $entries);
+
+		// Should produce: 2/26, 2/27, 2/28, 2/29, 2/30, 3/1, 3/2, (possibly more)
+		self::assertSame('2/26', $dates[0]);
+		self::assertSame('2/27', $dates[1]);
+		self::assertSame('2/28', $dates[2]);
+		self::assertSame('2/29', $dates[3]);
+		self::assertSame('2/30', $dates[4]);
+		self::assertSame('3/1', $dates[5]);
+		self::assertSame('3/2', $dates[6]);
+		self::assertGreaterThanOrEqual(7, count($entries));
+	}
+
+	#[Test]
+	public function generateDateEntriesStartingAtFeb28ProducesVirtualDays(): void
+	{
+		$entries = VirtualDate::generateDateEntries(2, 28, 7);
+
+		$dates = array_map(fn(array $e) => "{$e['month']}/{$e['day']}", $entries);
+
+		// Feb 28 contributes 3 entries (28, 29, 30), then real days continue
+		self::assertSame('2/28', $dates[0]);
+		self::assertSame('2/29', $dates[1]);
+		self::assertSame('2/30', $dates[2]);
+		self::assertSame('3/1', $dates[3]);
+		self::assertGreaterThanOrEqual(7, count($entries));
+	}
+
+	#[Test]
+	public function generateDateEntriesDaysFromTodayIncrementsForVirtualDays(): void
+	{
+		$entries = VirtualDate::generateDateEntries(2, 28, 7);
+
+		// Virtual Feb 29 should be exactly 1 more than Feb 28
+		$feb28Diff = $entries[0]['daysFromToday'];
+		self::assertSame($feb28Diff + 1, $entries[1]['daysFromToday']); // Feb 29
+		self::assertSame($feb28Diff + 2, $entries[2]['daysFromToday']); // Feb 30
+	}
+
+	#[Test]
 	public function advanceEntriesSkipsCorrectly(): void
 	{
 		// Starting from Jun 1, advance 7 entries

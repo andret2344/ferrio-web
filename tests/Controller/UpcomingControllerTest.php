@@ -13,16 +13,16 @@ final class UpcomingControllerTest extends WebTestCase
 	public function upcomingRedirectsToWeek0(): void
 	{
 		$client = static::createClient();
-		$client->request('GET', '/upcoming');
+		$client->request('GET', '/en/upcoming');
 
-		self::assertResponseRedirects('/upcoming/0');
+		self::assertResponseRedirects('/en/upcoming/0');
 	}
 
 	#[Test]
 	public function week0Returns200(): void
 	{
 		$client = static::createClient();
-		$client->request('GET', '/upcoming/0');
+		$client->request('GET', '/en/upcoming/0');
 
 		self::assertResponseIsSuccessful();
 	}
@@ -31,7 +31,7 @@ final class UpcomingControllerTest extends WebTestCase
 	public function positiveWeekReturns200(): void
 	{
 		$client = static::createClient();
-		$client->request('GET', '/upcoming/1');
+		$client->request('GET', '/en/upcoming/1');
 
 		self::assertResponseIsSuccessful();
 	}
@@ -40,7 +40,7 @@ final class UpcomingControllerTest extends WebTestCase
 	public function negativeWeekReturns200(): void
 	{
 		$client = static::createClient();
-		$client->request('GET', '/upcoming/-1');
+		$client->request('GET', '/en/upcoming/-1');
 
 		self::assertResponseIsSuccessful();
 	}
@@ -49,8 +49,18 @@ final class UpcomingControllerTest extends WebTestCase
 	public function extremeWeekIsClamped(): void
 	{
 		$client = static::createClient();
-		$client->request('GET', '/upcoming/9999');
+		$client->request('GET', '/en/upcoming/9999');
 
 		self::assertResponseIsSuccessful();
+	}
+
+	#[Test]
+	public function legacyUrlRedirectsToLocalized(): void
+	{
+		$client = static::createClient();
+		$client->request('GET', '/upcoming/0');
+
+		self::assertResponseStatusCodeSame(301);
+		self::assertStringContainsString('/upcoming/0', $client->getResponse()->headers->get('Location') ?? '');
 	}
 }

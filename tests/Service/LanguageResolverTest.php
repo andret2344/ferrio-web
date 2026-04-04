@@ -62,4 +62,30 @@ final class LanguageResolverTest extends TestCase
 
 		self::assertSame('en', $this->resolver->resolve($request));
 	}
+
+	#[Test]
+	public function queryParamTakesPrecedenceOverCookie(): void
+	{
+		$request = Request::create('/', 'GET', ['lang' => 'pl']);
+		$request->cookies->set('language', 'en');
+
+		self::assertSame('pl', $this->resolver->resolve($request));
+	}
+
+	#[Test]
+	public function queryParamTakesPrecedenceOverHeader(): void
+	{
+		$request = Request::create('/', 'GET', ['lang' => 'en']);
+		$request->headers->set('Accept-Language', 'pl');
+
+		self::assertSame('en', $this->resolver->resolve($request));
+	}
+
+	#[Test]
+	public function ignoresUnsupportedQueryParam(): void
+	{
+		$request = Request::create('/', 'GET', ['lang' => 'de']);
+
+		self::assertSame('en', $this->resolver->resolve($request));
+	}
 }
