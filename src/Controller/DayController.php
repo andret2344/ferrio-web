@@ -36,7 +36,6 @@ final class DayController extends AbstractController
 			'prevDay' => VirtualDate::getAdjacentDay($month, $day, -1),
 			'nextDay' => VirtualDate::getAdjacentDay($month, $day, 1),
 			'randomDay' => VirtualDate::getRandomDate(),
-			'currentYear' => (int) date('Y'),
 		]);
 
 		$response->setSharedMaxAge(3600);
