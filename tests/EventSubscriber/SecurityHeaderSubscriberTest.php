@@ -24,7 +24,7 @@ final class SecurityHeaderSubscriberTest extends TestCase
 		self::assertArrayHasKey(KernelEvents::REQUEST, $events);
 		self::assertSame('onKernelRequest', $events[KernelEvents::REQUEST]);
 		self::assertArrayHasKey(KernelEvents::RESPONSE, $events);
-		self::assertSame('onKernelResponse', $events[KernelEvents::RESPONSE]);
+		self::assertSame(['onKernelResponse', -10], $events[KernelEvents::RESPONSE]);
 	}
 
 	#[Test]
