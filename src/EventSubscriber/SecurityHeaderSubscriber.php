@@ -17,7 +17,8 @@ final class SecurityHeaderSubscriber implements EventSubscriberInterface
 	{
 		return [
 			KernelEvents::REQUEST => 'onKernelRequest',
-			KernelEvents::RESPONSE => 'onKernelResponse',
+			// Run after Symfony's ResponseListener (priority 0) so Content-Type is populated.
+			KernelEvents::RESPONSE => ['onKernelResponse', -10],
 		];
 	}
 
