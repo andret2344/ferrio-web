@@ -1,0 +1,255 @@
+{% extends 'base.html.twig' %}
+
+{% set is_pl = lang == 'pl' %}
+{% set contact_email = 'andret2344@gmail.com' %}
+
+{% block title %}{{ is_pl ? 'Regulamin aplikacji Ferrio' : 'Terms of Service – Ferrio App' }}{% endblock %}
+{% block meta_description %}{{ is_pl ? 'Regulamin korzystania z aplikacji Ferrio' : 'Terms of Service for the Ferrio App' }}{% endblock %}
+
+{% block meta_extra %}
+	{% set page_title = is_pl ? 'Regulamin aplikacji Ferrio' : 'Terms of Service – Ferrio App' %}
+	{% set page_desc = is_pl ? 'Regulamin korzystania z aplikacji Ferrio' : 'Terms of Service for the Ferrio App' %}
+	{% set page_url = url('terms') %}
+
+	{% include 'partials/meta_tags.html.twig' with {
+		meta_title: page_title,
+		meta_description: page_desc,
+		meta_url: page_url,
+	} %}
+
+	<script type="application/ld+json">
+	{
+		"@context": "https://schema.org",
+		"@type": "WebPage",
+		"name": "{{ page_title|e('js') }}",
+		"description": "{{ page_desc|e('js') }}",
+		"url": "{{ page_url|e('js') }}",
+		"isPartOf": {
+			"@type": "WebSite",
+			"name": "Ferrio",
+			"url": "{{ url('home')|e('js') }}"
+		},
+		"breadcrumb": {
+			"@type": "BreadcrumbList",
+			"itemListElement": [
+				{
+					"@type": "ListItem",
+					"position": 1,
+					"name": "{{ is_pl ? 'Strona główna' : 'Home' }}",
+					"item": "{{ url('home')|e('js') }}"
+				},
+				{
+					"@type": "ListItem",
+					"position": 2,
+					"name": "{{ page_title|e('js') }}",
+					"item": "{{ page_url|e('js') }}"
+				}
+			]
+		}
+	}
+	</script>
+{% endblock %}
+
+{% macro section_title(text) %}
+	<h2 class="text-base font-bold text-orange-600 dark:text-orange-400 mb-3">{{ text }}</h2>
+{% endmacro %}
+
+{% macro para(text) %}
+	<p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{{ text|raw }}</p>
+{% endmacro %}
+
+{% macro para_mt(text) %}
+	<p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed mt-1">{{ text|raw }}</p>
+{% endmacro %}
+
+{% macro para_mt2(text) %}
+	<p class="text-sm text-gray-700 dark:text-gray-300 leading-relaxed mt-2">{{ text|raw }}</p>
+{% endmacro %}
+
+{% macro list_item(text) %}
+	<li class="flex gap-2 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
+		<span class="text-amber-500 mt-0.5 shrink-0 font-bold">&bull;</span>
+		{{ text|raw }}
+	</li>
+{% endmacro %}
+
+{% macro email_link(email) %}
+	<a
+			href="mailto:{{ email }}"
+			class="text-amber-600 dark:text-amber-400 underline hover:text-amber-700 dark:hover:text-amber-300">{{ email }}</a>
+{% endmacro %}
+
+{% block body %}
+	<main id="main-content" class="mb-16 sm:mb-20 md:mb-24">
+		<div class="text-center mb-8">
+			<div class="inline-flex p-3 bg-amber-100 dark:bg-amber-900/30 rounded-full mb-4">
+				<svg
+						class="w-8 h-8 text-amber-600 dark:text-amber-400"
+						xmlns="http://www.w3.org/2000/svg"
+						fill="none"
+						viewBox="0 0 24 24"
+						stroke-width="1.5"
+						stroke="currentColor">
+					<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m2.25 0H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"/>
+				</svg>
+			</div>
+			<h1 class="text-3xl sm:text-4xl font-bold bg-linear-to-r from-amber-600 via-orange-600 to-rose-600 bg-clip-text text-transparent pb-1 mb-3">
+				{{ is_pl ? 'Regulamin aplikacji Ferrio' : 'Terms of Service – Ferrio App' }}
+			</h1>
+			<span class="inline-block text-xs font-medium text-gray-500 dark:text-gray-400 bg-white/80 dark:bg-gray-800 px-3 py-1.5 rounded-full border border-gray-200 dark:border-gray-700">
+                {{ is_pl ? 'Data wejścia w życie: 4 maja 2026' : 'Effective date: May 4, 2026' }}
+            </span>
+		</div>
+
+		<div class="bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm rounded-2xl shadow-sm border border-amber-100/80 dark:border-gray-700 p-6 sm:p-8 space-y-6">
+			{# Section 1 #}
+			<section>
+				{{ _self.section_title(is_pl ? '1. Postanowienia wstępne' : '1. Introduction') }}
+				{{ _self.para(is_pl ? 'Niniejszy regulamin („Regulamin”) określa zasady korzystania z usług Ferrio („Usługi”), na które składają się: strona internetowa ferrio.app, aplikacje mobilne na Androida i iOS, bot Discord oraz powiązane interfejsy API.' : 'These Terms of Service (the "Terms") govern the use of the Ferrio services (the "Services"), which include the ferrio.app website, the Android and iOS mobile applications, the Discord bot, and the related APIs.') }}
+				{{ _self.para_mt2(is_pl ? 'Usługodawcą jest Andrzej Chmiel („Usługodawca”).' : 'The Services are provided by Andrzej Chmiel (the "Provider").') }}
+				{{ _self.para_mt((is_pl ? 'Kontakt: ' : 'Contact: ') ~ _self.email_link(contact_email) ~ '.') }}
+				{{ _self.para_mt2(is_pl ? 'Korzystanie z Usług oznacza akceptację Regulaminu. Jeśli użytkownik nie akceptuje Regulaminu, powinien zaprzestać korzystania z Usług.' : 'By using the Services, you agree to these Terms. If you do not agree, you must stop using the Services.') }}
+			</section>
+			<hr class="border-gray-100 dark:border-gray-700">
+
+			{# Section 2 #}
+			<section>
+				{{ _self.section_title(is_pl ? '2. Opis Usług' : '2. Description of the Services') }}
+				{{ _self.para(is_pl ? 'Ferrio udostępnia informacje o świętach, dniach pamiętnych i obchodach na każdy dzień roku. Te same dane są dostępne w różnych formach:' : 'Ferrio provides information about holidays, observances, and notable days for any day of the year. The same data is delivered through several front-ends:') }}
+				<ul class="mt-2 ml-1 space-y-1.5">
+					{{ _self.list_item(is_pl ? 'witryna internetowa ferrio.app,' : 'the ferrio.app website,') }}
+					{{ _self.list_item(is_pl ? 'aplikacja mobilna na Androida,' : 'the Android mobile app,') }}
+					{{ _self.list_item(is_pl ? 'aplikacja mobilna na iOS,' : 'the iOS mobile app,') }}
+					{{ _self.list_item(is_pl ? 'bot Discord udostępniający komendy ze świętami na danej serwerze,' : 'the Discord bot that exposes holiday commands on Discord servers,') }}
+					{{ _self.list_item(is_pl ? 'publiczne API hostowane pod adresem api.ferrio.app.' : 'the public API hosted at api.ferrio.app.') }}
+				</ul>
+				{{ _self.para_mt2(is_pl ? 'Usługi są świadczone bezpłatnie. Usługodawca może w każdej chwili zmieniać, ograniczać lub wycofywać poszczególne funkcje bez wcześniejszego powiadomienia.' : 'The Services are provided free of charge. The Provider may add, change, limit, or discontinue any feature at any time without prior notice.') }}
+			</section>
+			<hr class="border-gray-100 dark:border-gray-700">
+
+			{# Section 3 #}
+			<section>
+				{{ _self.section_title(is_pl ? '3. Wymagania dotyczące korzystania' : '3. Eligibility') }}
+				{{ _self.para(is_pl ? 'Z Usług można korzystać pod warunkiem posiadania zdolności do zawarcia wiążącej umowy zgodnie z prawem właściwym dla miejsca zamieszkania użytkownika. Osoby niepełnoletnie powinny korzystać z Usług pod nadzorem rodzica lub opiekuna prawnego.' : 'You may use the Services only if you can form a binding contract under the laws of your jurisdiction. Minors must use the Services under the supervision of a parent or legal guardian.') }}
+				{{ _self.para_mt2(is_pl ? 'Korzystanie z bota Discord podlega dodatkowo Regulaminowi i Wytycznym Społeczności Discord.' : 'Use of the Discord bot is additionally subject to the Discord Terms of Service and Community Guidelines.') }}
+				{{ _self.para_mt(is_pl ? 'Korzystanie z aplikacji na Androida i iOS podlega dodatkowo regulaminom Google Play oraz App Store.' : 'Use of the Android and iOS apps is additionally subject to the Google Play and App Store terms.') }}
+			</section>
+			<hr class="border-gray-100 dark:border-gray-700">
+
+			{# Section 4 #}
+			<section>
+				{{ _self.section_title(is_pl ? '4. Konta użytkowników' : '4. User Accounts') }}
+				{{ _self.para(is_pl ? 'Niektóre funkcje aplikacji mobilnych wymagają zalogowania się przy użyciu Firebase Authentication. Logowanie anonimowe jest dostępne, ale ogranicza dostęp do funkcji wymagających identyfikacji (np. wysyłania zgłoszeń).' : 'Some features of the mobile apps require signing in via Firebase Authentication. Anonymous sign-in is available but restricts access to features that require identification (such as submitting reports).') }}
+				{{ _self.para_mt2(is_pl ? 'Użytkownik odpowiada za zachowanie poufności danych logowania oraz za wszelkie działania wykonywane z poziomu jego konta.' : 'You are responsible for keeping your login credentials confidential and for any activity that occurs through your account.') }}
+				{{ _self.para_mt(is_pl ? 'Korzystanie z bota Discord nie wymaga osobnego konta Ferrio – tożsamość użytkownika jest ustalana na podstawie jego konta Discord.' : 'The Discord bot does not require a separate Ferrio account; users are identified through their Discord account.') }}
+				{{ _self.para_mt(is_pl ? 'Witryna ferrio.app nie wymaga rejestracji.' : 'The ferrio.app website does not require registration.') }}
+			</section>
+			<hr class="border-gray-100 dark:border-gray-700">
+
+			{# Section 5 #}
+			<section>
+				{{ _self.section_title(is_pl ? '5. Treści użytkowników i zgłoszenia' : '5. User Content and Reports') }}
+				{{ _self.para(is_pl ? 'Zalogowani (nieanonimowi) użytkownicy mogą zgłaszać błędy w informacjach o świętach lub proponować brakujące święta („Treści Użytkownika”).' : 'Authenticated (non-anonymous) users may report errors in holiday information or suggest missing holidays ("User Content").') }}
+				{{ _self.para_mt2(is_pl ? 'Wysyłając Treści Użytkownika, użytkownik:' : 'By submitting User Content, you:') }}
+				<ul class="mt-2 ml-1 space-y-1.5">
+					{{ _self.list_item(is_pl ? 'oświadcza, że posiada do nich odpowiednie prawa i że nie naruszają one praw osób trzecich,' : 'represent that you have the necessary rights to such content and that it does not infringe any third-party rights,') }}
+					{{ _self.list_item(is_pl ? 'udziela Usługodawcy niewyłącznej, nieodpłatnej, ogólnoświatowej i niewygasającej licencji na ich wykorzystanie, weryfikację i włączenie do bazy danych Ferrio oraz dystrybucję poprzez wszystkie front-endy Ferrio,' : 'grant the Provider a non-exclusive, royalty-free, worldwide, perpetual licence to use, review, and incorporate such content into the Ferrio database and to distribute it through any Ferrio front-end,') }}
+					{{ _self.list_item(is_pl ? 'przyjmuje do wiadomości, że Usługodawca nie ma obowiązku zaakceptowania, opublikowania ani zachowania zgłoszonej treści.' : 'acknowledge that the Provider is under no obligation to accept, publish, or retain the submitted content.') }}
+				</ul>
+			</section>
+			<hr class="border-gray-100 dark:border-gray-700">
+
+			{# Section 6 #}
+			<section>
+				{{ _self.section_title(is_pl ? '6. Dozwolone i zabronione korzystanie' : '6. Acceptable Use') }}
+				{{ _self.para(is_pl ? 'Korzystając z Usług, użytkownik zobowiązuje się nie:' : 'When using the Services, you agree not to:') }}
+				<ul class="mt-2 ml-1 space-y-1.5">
+					{{ _self.list_item(is_pl ? 'wykorzystywać ich do działalności niezgodnej z prawem lub naruszającej prawa osób trzecich,' : 'use them for any unlawful purpose or in a way that infringes the rights of others,') }}
+					{{ _self.list_item(is_pl ? 'spamować, zalewać żądaniami ani celowo zakłócać działania Usług, w tym API,' : 'spam, flood, or otherwise interfere with the operation of the Services, including the API,') }}
+					{{ _self.list_item(is_pl ? 'omijać ograniczeń technicznych, limitów zapytań lub mechanizmów uwierzytelniania,' : 'circumvent technical restrictions, rate limits, or authentication mechanisms,') }}
+					{{ _self.list_item(is_pl ? 'masowo pobierać danych w celu odtworzenia konkurencyjnej usługi,' : 'scrape data in bulk in order to rebuild a competing service,') }}
+					{{ _self.list_item(is_pl ? 'wysyłać zgłoszeń zawierających treści nielegalne, obraźliwe, dyskryminujące, wulgarne, nawołujące do przemocy lub w inny sposób nieodpowiednie,' : 'submit reports that are illegal, abusive, discriminatory, obscene, threatening, or otherwise inappropriate,') }}
+					{{ _self.list_item(is_pl ? 'podszywać się pod inne osoby ani podawać fałszywych informacji.' : 'impersonate any person or provide false information.') }}
+				</ul>
+				{{ _self.para_mt2(is_pl ? 'Naruszenie powyższych zasad może skutkować zablokowaniem konta lub adresu IP bez wcześniejszego powiadomienia.' : 'Violations may result in suspension or termination of your account or IP address without prior notice.') }}
+			</section>
+			<hr class="border-gray-100 dark:border-gray-700">
+
+			{# Section 7 #}
+			<section>
+				{{ _self.section_title(is_pl ? '7. Limity zapytań do API' : '7. API Usage Limits') }}
+				{{ _self.para(is_pl ? 'Publiczne API może być wykorzystywane wyłącznie zgodnie z opublikowaną dokumentacją oraz w granicach rozsądnego użytkowania. Usługodawca może wprowadzać limity zapytań, blokować nadużycia lub wymagać uzyskania klucza API w przyszłości.' : 'The public API may be used only in accordance with its published documentation and within reasonable usage limits. The Provider may introduce rate limits, block abusive clients, or require API keys in the future.') }}
+			</section>
+			<hr class="border-gray-100 dark:border-gray-700">
+
+			{# Section 8 #}
+			<section>
+				{{ _self.section_title(is_pl ? '8. Własność intelektualna' : '8. Intellectual Property') }}
+				{{ _self.para(is_pl ? 'Marka, logo, projekt graficzny oraz kod źródłowy Usług stanowią własność Usługodawcy lub są wykorzystywane na podstawie odpowiednich licencji.' : 'The Ferrio brand, logo, design, and source code are owned by the Provider or used under appropriate licences.') }}
+				{{ _self.para_mt2(is_pl ? 'Dane o świętach pochodzą z różnych źródeł publicznych oraz zgłoszeń użytkowników i są udostępniane wyłącznie w celach informacyjnych. Użytkownik może z nich korzystać do użytku osobistego oraz w ramach normalnego korzystania z Usług. Komercyjne wykorzystanie wymaga osobnej zgody Usługodawcy.' : 'Holiday data is gathered from various public sources and user submissions and is provided for informational purposes only. You may use it for personal use and ordinary use of the Services. Commercial use requires the Provider\'s prior written consent.') }}
+			</section>
+			<hr class="border-gray-100 dark:border-gray-700">
+
+			{# Section 9 #}
+			<section>
+				{{ _self.section_title(is_pl ? '9. Usługi podmiotów trzecich' : '9. Third-Party Services') }}
+				{{ _self.para(is_pl ? 'Usługi korzystają z usług podmiotów trzecich, takich jak Firebase (Google LLC), Google Play, Apple App Store oraz Discord. Korzystanie z tych elementów Usług podlega dodatkowo regulaminom i politykom tych dostawców. Usługodawca nie odpowiada za działanie usług podmiotów trzecich.' : 'The Services rely on third-party providers, including Firebase (Google LLC), Google Play, the Apple App Store, and Discord. The use of those parts of the Services is additionally subject to the terms and policies of those providers. The Provider is not responsible for the operation of any third-party service.') }}
+			</section>
+			<hr class="border-gray-100 dark:border-gray-700">
+
+			{# Section 10 #}
+			<section>
+				{{ _self.section_title(is_pl ? '10. Dane osobowe' : '10. Personal Data') }}
+				{{ _self.para((is_pl ? 'Zasady przetwarzania danych osobowych opisane są w ' : 'How personal data is processed is described in the ') ~ '<a href="' ~ url('privacy') ~ '" class="text-amber-600 dark:text-amber-400 underline hover:text-amber-700 dark:hover:text-amber-300">' ~ (is_pl ? 'Polityce prywatności' : 'Privacy Policy') ~ '</a>' ~ (is_pl ? ', która stanowi integralną część Regulaminu.' : ', which forms an integral part of these Terms.')) }}
+			</section>
+			<hr class="border-gray-100 dark:border-gray-700">
+
+			{# Section 11 #}
+			<section>
+				{{ _self.section_title(is_pl ? '11. Wyłączenie odpowiedzialności' : '11. Disclaimer') }}
+				{{ _self.para(is_pl ? 'Usługi są udostępniane „tak jak są” („as-is”) i „w miarę dostępności” („as-available”), bez jakichkolwiek gwarancji, w szczególności gwarancji przydatności do określonego celu, nieprzerwanej dostępności, kompletności lub poprawności danych o świętach.' : 'The Services are provided on an "as-is" and "as-available" basis, without warranties of any kind, including warranties of fitness for a particular purpose, uninterrupted availability, or accuracy and completeness of holiday data.') }}
+				{{ _self.para_mt2(is_pl ? 'Informacje o świętach mają charakter wyłącznie poglądowy i nie powinny być wykorzystywane jako jedyna podstawa decyzji prawnych, biznesowych ani urzędowych.' : 'Holiday information is informational only and should not be used as the sole basis for legal, business, or official decisions.') }}
+			</section>
+			<hr class="border-gray-100 dark:border-gray-700">
+
+			{# Section 12 #}
+			<section>
+				{{ _self.section_title(is_pl ? '12. Ograniczenie odpowiedzialności' : '12. Limitation of Liability') }}
+				{{ _self.para(is_pl ? 'W maksymalnym zakresie dozwolonym przez prawo Usługodawca nie odpowiada za jakiekolwiek szkody pośrednie, przypadkowe, następcze lub utratę zysków wynikające z korzystania lub niemożności korzystania z Usług, w tym za błędy w danych o świętach, przerwy w działaniu, utratę danych użytkownika lub działanie usług podmiotów trzecich.' : 'To the maximum extent permitted by law, the Provider shall not be liable for any indirect, incidental, consequential, or lost-profit damages arising from your use of or inability to use the Services, including errors in holiday data, downtime, loss of user data, or third-party service failures.') }}
+				{{ _self.para_mt2(is_pl ? 'Powyższe nie wyłącza ani nie ogranicza odpowiedzialności, której zgodnie z prawem nie można wyłączyć ani ograniczyć (np. w stosunku do konsumentów).' : 'Nothing in these Terms excludes or limits liability that cannot be excluded or limited under applicable law (for example, towards consumers).') }}
+			</section>
+			<hr class="border-gray-100 dark:border-gray-700">
+
+			{# Section 13 #}
+			<section>
+				{{ _self.section_title(is_pl ? '13. Zawieszenie i zakończenie korzystania' : '13. Suspension and Termination') }}
+				{{ _self.para(is_pl ? 'Użytkownik może w każdej chwili zaprzestać korzystania z Usług, odinstalować aplikacje, usunąć bota z serwera Discord lub poprosić o usunięcie konta zgodnie z Polityką prywatności.' : 'You may stop using the Services at any time, uninstall the apps, remove the Discord bot from your server, or request account deletion in accordance with the Privacy Policy.') }}
+				{{ _self.para_mt2(is_pl ? 'Usługodawca może zawiesić lub zakończyć dostęp do Usług, w całości lub w części, w razie naruszenia Regulaminu, podejrzenia nadużyć lub gdy jest to konieczne ze względów technicznych, prawnych lub bezpieczeństwa.' : 'The Provider may suspend or terminate access to the Services, in whole or in part, in the event of a breach of these Terms, suspected abuse, or where required for technical, legal, or security reasons.') }}
+			</section>
+			<hr class="border-gray-100 dark:border-gray-700">
+
+			{# Section 14 #}
+			<section>
+				{{ _self.section_title(is_pl ? '14. Zmiany Regulaminu' : '14. Changes to the Terms') }}
+				{{ _self.para(is_pl ? 'Usługodawca może zmieniać Regulamin w każdym czasie. Aktualna wersja będzie zawsze dostępna na stronie ferrio.app oraz w aplikacjach. Dalsze korzystanie z Usług po wejściu w życie zmian oznacza ich akceptację.' : 'The Provider may update these Terms at any time. The current version will always be available on ferrio.app and within the apps. Continued use of the Services after changes take effect constitutes acceptance of the updated Terms.') }}
+			</section>
+			<hr class="border-gray-100 dark:border-gray-700">
+
+			{# Section 15 #}
+			<section>
+				{{ _self.section_title(is_pl ? '15. Prawo właściwe i spory' : '15. Governing Law and Disputes') }}
+				{{ _self.para(is_pl ? 'Regulamin podlega prawu polskiemu. Wszelkie spory wynikające z korzystania z Usług będą rozstrzygane przez właściwy sąd powszechny w Polsce. Postanowienie to nie pozbawia konsumentów ochrony przyznanej im przez bezwzględnie obowiązujące przepisy prawa kraju ich zwykłego pobytu.' : 'These Terms are governed by the laws of Poland. Any disputes arising from the use of the Services shall be resolved by the competent Polish court. This does not deprive consumers of the protection granted to them by mandatory provisions of the law of their country of habitual residence.') }}
+			</section>
+			<hr class="border-gray-100 dark:border-gray-700">
+
+			{# Section 16 #}
+			<section>
+				{{ _self.section_title(is_pl ? '16. Kontakt' : '16. Contact') }}
+				{{ _self.para((is_pl ? 'Pytania dotyczące Regulaminu można kierować na adres ' : 'Questions about these Terms can be sent to ') ~ _self.email_link(contact_email) ~ '.') }}
+			</section>
+		</div>
+	</main>
+{% endblock %}

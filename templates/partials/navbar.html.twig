@@ -22,6 +22,11 @@
                        class="relative pb-1 font-medium transition-all duration-200 text-gray-700 dark:text-gray-300 group after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:h-0.5 after:bg-gradient-to-r after:from-amber-600 after:via-orange-600 after:to-rose-600 after:transition-all after:duration-300 {{ current_route == 'upcoming' ? 'after:w-full' : 'after:w-0 hover:after:w-full' }}">
                         {{ is_en ? 'Upcoming' : 'Nadchodzące' }}
                     </a>
+                    <a href="{{ path('apps') }}"
+                       {{ current_route == 'apps' ? 'aria-current="page"' : '' }}
+                       class="relative pb-1 font-medium transition-all duration-200 text-gray-700 dark:text-gray-300 group after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:h-0.5 after:bg-gradient-to-r after:from-amber-600 after:via-orange-600 after:to-rose-600 after:transition-all after:duration-300 {{ current_route == 'apps' ? 'after:w-full' : 'after:w-0 hover:after:w-full' }}">
+                        {{ is_en ? 'Apps' : 'Aplikacje' }}
+                    </a>
                 </div>
 
                 {# Language picker — links to locale-prefixed URLs #}
@@ -56,6 +61,9 @@
                 </a>
                 <a href="{{ path('upcoming', {week: 0}) }}" {{ current_route == 'upcoming' ? 'aria-current="page"' : '' }} class="py-3 px-4 rounded-lg font-medium transition-colors block {{ current_route == 'upcoming' ? 'text-orange-600 dark:text-orange-400' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800' }}">
                     {{ is_en ? 'Upcoming' : 'Nadchodzące' }}
+                </a>
+                <a href="{{ path('apps') }}" {{ current_route == 'apps' ? 'aria-current="page"' : '' }} class="py-3 px-4 rounded-lg font-medium transition-colors block {{ current_route == 'apps' ? 'text-orange-600 dark:text-orange-400' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800' }}">
+                    {{ is_en ? 'Apps' : 'Aplikacje' }}
                 </a>
             </div>
         </div>

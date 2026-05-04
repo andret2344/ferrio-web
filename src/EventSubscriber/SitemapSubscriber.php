@@ -68,6 +68,12 @@ final class SitemapSubscriber implements EventSubscriberInterface
 	{
 		$enUrl = $this->urlGenerator->generate('privacy', ['_locale' => 'en'], UrlGeneratorInterface::ABSOLUTE_URL);
 		$urls->addUrl($this->withLangAlternatesSimple($enUrl, 'privacy', [], 'monthly', 0.3), 'static');
+
+		$enTermsUrl = $this->urlGenerator->generate('terms', ['_locale' => 'en'], UrlGeneratorInterface::ABSOLUTE_URL);
+		$urls->addUrl($this->withLangAlternatesSimple($enTermsUrl, 'terms', [], 'monthly', 0.3), 'static');
+
+		$enAppsUrl = $this->urlGenerator->generate('apps', ['_locale' => 'en'], UrlGeneratorInterface::ABSOLUTE_URL);
+		$urls->addUrl($this->withLangAlternatesSimple($enAppsUrl, 'apps', [], 'monthly', 0.6), 'static');
 	}
 
 	private function withLangAlternates(string $canonicalUrl, int $month, int $day, string $changeFreq, float $priority): GoogleMultilangUrlDecorator

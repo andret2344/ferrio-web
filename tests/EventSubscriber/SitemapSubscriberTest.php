@@ -88,7 +88,7 @@ final class SitemapSubscriberTest extends TestCase
 
 		$this->subscriber->populate($event);
 
-		// 1 static URL (privacy)
-		self::assertCount(1, $urls['static']);
+		// 3 static URLs (privacy, terms, apps)
+		self::assertCount(3, $urls['static']);
 	}
 }

@@ -17,6 +17,8 @@ final class LegacyRedirectSubscriber implements EventSubscriberInterface
 		'#^/upcoming/(-?\d+)$#' => 'upcoming',
 		'#^/upcoming$#' => 'upcoming_redirect',
 		'#^/privacy$#' => 'privacy',
+		'#^/terms$#' => 'terms',
+		'#^/apps$#' => 'apps',
 	];
 
 	public function __construct(
