@@ -27,9 +27,12 @@ final class LocaleSubscriber implements EventSubscriberInterface
 		$request = $event->getRequest();
 
 		// For routes with {_locale}, Symfony sets the locale automatically.
-		// This subscriber handles routes without {_locale} (e.g. root /).
+		// This subscriber handles routes without {_locale} (e.g. root /, unmatched 404 paths).
+		// The _locale attribute is set so URL generation for {_locale}-prefixed routes works.
 		if ($request->attributes->get('_locale') === null) {
-			$request->setLocale($this->languageResolver->resolve($request));
+			$locale = $this->languageResolver->resolve($request);
+			$request->setLocale($locale);
+			$request->attributes->set('_locale', $locale);
 		}
 	}
 }
