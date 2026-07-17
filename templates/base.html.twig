@@ -47,6 +47,17 @@
         }
 	</script>
 
+	{# Google tag (gtag.js) #}
+	<script
+			async
+			src="https://www.googletagmanager.com/gtag/js?id=G-YPY670KM4X"></script>
+	<script nonce="{{ app.request.attributes.get('_csp_nonce') }}">
+		window.dataLayer = window.dataLayer || [];
+		function gtag() { dataLayer.push(arguments); }
+		gtag('js', new Date());
+		gtag('config', 'G-YPY670KM4X');
+	</script>
+
 	{% block meta_extra %}{% endblock %}
 
 	{# Inline theme detection — must run before first paint to prevent flash #}

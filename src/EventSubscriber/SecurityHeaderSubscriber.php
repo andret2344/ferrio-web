@@ -77,6 +77,6 @@ final class SecurityHeaderSubscriber implements EventSubscriberInterface
 		$headers->set('X-Frame-Options', 'DENY');
 		$headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
 		$headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=(), usb=()');
-		$headers->set('Content-Security-Policy', "default-src 'self'; script-src 'self' 'nonce-{$nonce}'; style-src 'self' 'unsafe-inline'; img-src 'self' https:; connect-src 'self' https://api.ferrio.app; frame-ancestors 'none'; base-uri 'self'; form-action 'self'");
+		$headers->set('Content-Security-Policy', "default-src 'self'; script-src 'self' 'nonce-{$nonce}' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' https:; connect-src 'self' https://api.ferrio.app https://www.googletagmanager.com https://www.google-analytics.com https://*.google-analytics.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'");
 	}
 }
