@@ -48,6 +48,35 @@ final class AppsControllerTest extends WebTestCase
 	}
 
 	#[Test]
+	public function appsHasOpenGraphImage(): void
+	{
+		$client = static::createClient();
+		$crawler = $client->request('GET', '/en/apps');
+
+		self::assertStringEndsWith('/images/og-en.png', $crawler->filter('meta[property="og:image"]')->attr('content') ?? '');
+		self::assertStringStartsWith('http', $crawler->filter('meta[property="og:image"]')->attr('content') ?? '');
+		self::assertSame('summary_large_image', $crawler->filter('meta[name="twitter:card"]')->attr('content'));
+	}
+
+	#[Test]
+	public function polishAppsHasPolishOpenGraphImage(): void
+	{
+		$client = static::createClient();
+		$crawler = $client->request('GET', '/pl/apps');
+
+		self::assertStringEndsWith('/images/og-pl.png', $crawler->filter('meta[property="og:image"]')->attr('content') ?? '');
+	}
+
+	#[Test]
+	public function openGraphImagesExist(): void
+	{
+		$publicDir = dirname(__DIR__, 2) . '/public/images';
+
+		self::assertFileExists($publicDir . '/og-en.png');
+		self::assertFileExists($publicDir . '/og-pl.png');
+	}
+
+	#[Test]
 	public function legacyUrlRedirectsToLocalized(): void
 	{
 		$client = static::createClient();

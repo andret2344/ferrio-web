@@ -29,11 +29,34 @@
 	<meta
 			property="og:locale:alternate"
 			content="{{ app.request.locale == 'pl' ? 'en_US' : 'pl_PL' }}">
+	{% set og_image = absolute_url('/images/og-' ~ (app.request.locale == 'pl' ? 'pl' : 'en') ~ '.png') %}
+	{% set og_image_alt = app.request.locale == 'pl' ? 'Ferrio - kalendarz nietypowych świąt' : 'Ferrio - a calendar of unusual holidays' %}
+	<meta
+			property="og:image"
+			content="{{ og_image }}">
+	<meta
+			property="og:image:width"
+			content="1200">
+	<meta
+			property="og:image:height"
+			content="630">
+	<meta
+			property="og:image:type"
+			content="image/png">
+	<meta
+			property="og:image:alt"
+			content="{{ og_image_alt }}">
 
 	{# Twitter Card defaults #}
 	<meta
 			name="twitter:card"
-			content="summary">
+			content="summary_large_image">
+	<meta
+			name="twitter:image"
+			content="{{ og_image }}">
+	<meta
+			name="twitter:image:alt"
+			content="{{ og_image_alt }}">
 
 	{# Site-level structured data #}
 	<script type="application/ld+json">
